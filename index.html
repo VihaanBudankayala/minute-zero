@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#161616">
   <title>Minute Zero</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- "?v=5": bump this number (and CACHE_VERSION in sw.js) after every change,
+       so browsers fetch the new file instead of an old saved one. -->
+  <link rel="stylesheet" href="styles.css?v=5">
   <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -29,8 +31,13 @@
         <!-- role="timer" tells screen readers this is a clock. -->
         <div id="clock" class="clock" role="timer" aria-label="Elapsed time">--:--</div>
       </div>
-      <!-- Reset: only shown during an emergency (CSS), and it always asks first. -->
-      <button id="btn-reset" class="btn-reset" type="button" data-content="reset.button"></button>
+      <!-- Only shown during an emergency (CSS). -->
+      <div class="topbar-tools">
+        <!-- Restarts the elapsed clock at 0:00 (logged; Undo works). -->
+        <button id="btn-reset-time" class="btn-reset" type="button" data-content="reset.timeButton"></button>
+        <!-- Erases the log and goes back to START, after an "Are you sure?" popup. -->
+        <button id="btn-reset" class="btn-reset" type="button" data-content="reset.button"></button>
+      </div>
     </div>
 
     <!-- Row 2: the two ways to reach 911, side by side. -->
@@ -57,16 +64,19 @@
   </header>
 
   <main>
-    <!-- "Erase this log and start over?" A panel on the page instead of
-         confirm(), which is tiny on phones and blocked in some places. -->
-    <div id="reset-confirm" class="reset-confirm stack" role="alertdialog" aria-labelledby="reset-question" hidden>
-      <p id="reset-question" class="reset-question" data-content="reset.question"></p>
-      <p data-content="reset.note"></p>
-      <div class="row">
-        <button id="btn-reset-yes" class="btn btn-primary" type="button" data-content="reset.yes"></button>
-        <button id="btn-reset-cancel" class="btn" type="button" data-content="reset.cancel"></button>
+    <!-- "Are you sure?" popup for Start over. <dialog> is the browser's own popup
+         element: showModal() dims the page behind it and keeps focus inside it.
+         (Unlike confirm(), it's big, readable and never blocked.) -->
+    <dialog id="startover-dialog" class="startover-dialog" aria-labelledby="reset-question">
+      <div class="stack">
+        <p id="reset-question" class="reset-question" data-content="reset.question"></p>
+        <p data-content="reset.note"></p>
+        <div class="row">
+          <button id="btn-reset-yes" class="btn btn-primary" type="button" data-content="reset.yes"></button>
+          <button id="btn-reset-cancel" class="btn" type="button" data-content="reset.cancel"></button>
+        </div>
       </div>
-    </div>
+    </dialog>
 
     <!-- 911 STATUS CARD: shared by every screen after START.
          app.js switches it from "pending" (amber, !) to "done" (green, ✓).
@@ -512,7 +522,7 @@
 
   <!-- Order matters: content.js defines CONTENT, then app.js uses it.
        Scripts go at the end of <body> so the HTML above already exists. -->
-  <script src="content.js"></script>
-  <script src="app.js"></script>
+  <script src="content.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

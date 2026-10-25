@@ -135,6 +135,9 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
+## Sun Oct 25 (newest): top bar row 1 = clock · [Reset time] [Start over]. Reset time logs kind "timerReset"
+## (clockZero()); Start over = <dialog> popup → erase + reload to START. Files load as ?v=5: BUMP ?v= in index.html
+## AND CACHE_VERSION in sw.js (now v5) on EVERY change. sw.js: network first (no-cache, 3 s), keys without ?query.
 ## Sun Oct 25 (latest): two-row top bar [clock · Reset] / [Call 911 | Text 911]; updateTextLinks() keeps sms bodies
 ## current; 911 card extras only before a mode is chosen; "Not sure?" is the first picker button; "Find my location
 ## for 911" lives in the log panel. sw.js CACHE_VERSION = v3.

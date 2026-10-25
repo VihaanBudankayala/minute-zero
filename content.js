@@ -53,12 +53,14 @@ const CONTENT = {
   call911Button: "Call 911",
   text911Button: "Text 911",
 
-  // ---------- Reset (top bar) ----------
+  // ---------- Top bar: Reset time + Start over ----------
   reset: {
-    button: "Reset",
-    question: "Erase this emergency's log and start over?",
-    note: "If paramedics need it, show or copy the handoff first.",
-    yes: "Yes, erase and start over",
+    timeButton: "Reset time",
+    timeLog: "Timer reset to 0:00", // logged, so the record stays honest (and Undo works)
+    button: "Start over",
+    question: "Are you sure you want to start over?",
+    note: "This erases this emergency's log and goes back to the start screen. If paramedics need it, show or copy the handoff first.",
+    yes: "Yes, start over",
     cancel: "Cancel",
   },
 

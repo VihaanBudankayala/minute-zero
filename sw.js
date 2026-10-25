@@ -16,7 +16,7 @@
  * When you change any file, change CACHE_VERSION (v1 -> v2) so phones throw
  * away the old saved copy and save the new files.
  */
-const CACHE_VERSION = "minutezero-v4";
+const CACHE_VERSION = "minutezero-v5";
 
 // Every file the app needs to work offline.
 const FILES = [
@@ -45,7 +45,9 @@ const FILES = [
 //    so we never end up with a half-saved app.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(FILES))
+    // cache: "reload" = download fresh copies, not ones the browser saved earlier.
+    caches.open(CACHE_VERSION).then((cache) =>
+      cache.addAll(FILES.map((file) => new Request(file, { cache: "reload" }))))
   );
   self.skipWaiting(); // start using the new version right away
 });
@@ -68,13 +70,20 @@ self.addEventListener("fetch", (event) => {
   // Only handle normal loads from our own site (not tel:, sms:, or other sites).
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
 
+  // Save and look up files by their plain name ("styles.css", not "styles.css?v=5"),
+  // so a fresh copy REPLACES the old one instead of sitting next to it.
+  const key = new URL(request.url);
+  key.search = "";
+
   event.respondWith(
     caches.open(CACHE_VERSION).then(async (cache) => {
       // A promise that gives up after 3 seconds (a weak signal shouldn't make people wait).
       const timeout = new Promise((resolve) => setTimeout(() => resolve(null), NETWORK_TIMEOUT_MS));
-      const network = fetch(request)
+      // cache: "no-cache" = always ask GitHub if there's a newer copy, instead of
+      // using a copy the browser saved earlier (that's how old CSS showed up).
+      const network = fetch(request, { cache: "no-cache" })
         .then((response) => {
-          if (response.ok) cache.put(request, response.clone()); // keep the saved copy fresh
+          if (response.ok) cache.put(key.href, response.clone()); // keep the saved copy fresh
           return response;
         })
         .catch(() => null); // offline
@@ -83,7 +92,7 @@ self.addEventListener("fetch", (event) => {
       const response = await Promise.race([network, timeout]);
       if (response) return response;
 
-      const saved = await cache.match(request, { ignoreSearch: true });
+      const saved = await cache.match(key.href);
       if (saved) return saved;
       // Not saved (unusual URL) and no network: wait for the network a bit longer,
       // then fall back to the app's page.

@@ -844,9 +844,10 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 
 /* ---------- Two-row top bar: [clock  Reset] / [Call 911 | Text 911] ---------- */
 .topbar { flex-direction: column; align-items: stretch; gap: 8px; padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: 10px; }
-.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+              width: 100%; max-width: 40rem; margin: 0 auto; }  /* same width as the app on wide screens */
 .topbar-911 > * { flex: 1 1 0; min-width: 0; }   /* two equal halves */
-.clock-box { display: flex; align-items: baseline; gap: 10px; }
+.clock-box { display: flex; flex-direction: column; gap: 0; }   /* "ELAPSED" above the time: narrow */
 .clock { font-size: 1.9rem; }
 
 /* Text 911: same size as Call 911, outlined so Call stays the main action. */
@@ -877,7 +878,6 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
   justify-content: center;
   min-height: var(--tap-min);
   padding: 0 12px;
-  margin-left: auto;              /* sits between the clock and Call 911 */
   border: 2px solid var(--border);
   border-radius: 999px;
   background: transparent;
@@ -888,15 +888,22 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
   cursor: pointer;
 }
 .is-active .btn-reset { display: flex; }
-.btn-reset:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+.topbar-tools { display: flex; gap: 8px; margin-left: auto; }
 
-.reset-confirm {
-  padding: 14px;
+/* "Are you sure?" popup (<dialog>). ::backdrop is the dimmed page behind it. */
+.startover-dialog {
+  width: min(92vw, 28rem);
+  padding: 20px;
   border: 2px solid var(--signal);
   border-radius: var(--radius);
   background: var(--surface);
+  color: var(--text);
 }
-.reset-confirm p { margin: 0; }
+.startover-dialog::backdrop { background: rgba(0, 0, 0, 0.7); }
+.startover-dialog p { margin: 0; }
+.btn-reset:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+
+
 .reset-question { font-size: 1.2rem; font-weight: 800; }
 
 /* Step-by-step help at the top of the CPR screen: compact, full width. */

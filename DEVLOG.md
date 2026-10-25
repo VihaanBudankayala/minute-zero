@@ -660,3 +660,37 @@ title on the server. One reload showed the new title. Then we switched offline a
 app opened in 29 ms from the saved copy, with pictures. Cache version v4.
 **Lesson:** every caching choice is a trade-off between speed and freshness. For an app that's
 still being updated, stale content is a real bug, not just an inconvenience.
+
+---
+
+## "Reset time" + "Start over" popup, and the stale-CSS bug
+
+### What the student actually wanted
+Two different things: **Reset time** (restart the elapsed clock) and **Start over** (erase the log
+and go back to the START screen, after an "Are you sure?" popup).
+- **Reset time** logs "Timer reset to 0:00" with `kind: "timerReset"`. The clock counts from the
+  newest such entry (`clockZero()`), so it's stored in the timeline like everything else and Undo
+  brings the old time back. The handoff still uses the real start time.
+- **Start over** uses `<dialog>` + `showModal()`: the browser's own popup element. It dims the page,
+  keeps keyboard focus inside, closes with Escape, and (unlike `confirm()`) is big, readable and
+  never blocked. "Cancel" is focused by default.
+
+### Bug (real): the live site mixed new HTML with OLD CSS
+**Seen in the student's screenshot:** "Text 911" appeared as a plain blue underlined link under
+"Call 911", so the new `index.html` was loaded but an old `styles.css` was used.
+**Why:** GitHub Pages lets browsers keep files for 10 minutes, and a normal reload only re-checks
+the page itself, not its CSS/JS. Our service worker's `fetch()` also used the browser's saved copy.
+**Fixes:**
+1. Version numbers on our files (`styles.css?v=5`, `app.js?v=5`, `content.js?v=5`): a new number
+   is a new address, so browsers must download it. Bump it (and `CACHE_VERSION`) on every change.
+2. The service worker fetches with `{ cache: "no-cache" }` (always ask GitHub if there's a newer copy)
+   and installs with `{ cache: "reload" }`.
+3. **A second bug we caused and caught:** the fresh copy was saved as `styles.css?v=5` while the old
+   one stayed saved as `styles.css`, and offline the old one won. Now files are saved under their
+   plain name, so the fresh copy replaces the old one.
+**Tests:** on a local server, changing only `styles.css` (without bumping the number, the worst case)
+showed the new CSS on the first reload, and offline kept the new CSS.
+
+### Wide screens
+On a 1900-px laptop the Call/Text buttons stretched to ~930 px each. The top bar now uses the same
+max width as the app (40rem), centered.

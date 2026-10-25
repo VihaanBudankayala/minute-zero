@@ -240,9 +240,24 @@ function updateClock() {
     clock.textContent = "--:--";
     return;
   }
-  clock.textContent = formatElapsed(Date.now() - state.startTime);
+  clock.textContent = formatElapsed(Date.now() - clockZero());
   updateCprTimer(); // the 2-minute CPR countdown uses the same tick
   if (!byId("screen-handoff").hidden) refreshHandoffAgo();
+}
+
+// When the top-bar clock counts from: the newest "Reset time" entry, or the
+// start of the emergency. Kept in the timeline (single source of truth), so
+// Undo brings the old time back. The log and handoff still use the real start.
+function clockZero() {
+  const reset = state.timeline.filter((e) => e.kind === "timerReset").pop();
+  return reset ? reset.time : state.startTime;
+}
+
+// "Reset time": the clock starts again at 0:00 (and the reset is logged).
+function resetTime() {
+  logEvent(CONTENT.reset.timeLog, { kind: "timerReset", undoable: true });
+  updateClock();
+  buzz(40);
 }
 
 // Things every running emergency needs, whether it's new or resumed:
@@ -1794,19 +1809,25 @@ function registerOffline() {
 }
 
 // ============================================================
-// 23. RESET (top bar)
-// Asks first, on the page. "Yes" deletes the saved log and reloads the page,
+// 23. START OVER (top bar)
+// Asks first, in a popup. "Yes" deletes the saved log and reloads the page,
 // which is the simplest way to be sure everything (clock, CPR beat, screens)
 // starts completely fresh.
 // ============================================================
 function openResetConfirm() {
-  byId("reset-confirm").hidden = false;
-  window.scrollTo(0, 0);
-  byId("btn-reset-cancel").focus(); // the safe choice gets focus
+  const dialog = byId("startover-dialog");
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();                 // the popup, with the page dimmed behind it
+  } else {
+    dialog.setAttribute("open", "");    // very old browsers: show it in the page
+  }
+  byId("btn-reset-cancel").focus();     // the safe choice gets focus
 }
 
 function closeResetConfirm() {
-  byId("reset-confirm").hidden = true;
+  const dialog = byId("startover-dialog");
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
 }
 
 function resetEverything() {
@@ -1878,6 +1899,7 @@ function init() {
   byId("btn-cpr-start").addEventListener("click", () => startCpr());
   byId("btn-about").addEventListener("click", openAbout);
   byId("btn-reset").addEventListener("click", openResetConfirm);
+  byId("btn-reset-time").addEventListener("click", resetTime);
   byId("btn-reset-cancel").addEventListener("click", closeResetConfirm);
   byId("btn-reset-yes").addEventListener("click", resetEverything);
   // Only show "Read steps aloud" if this phone/browser can speak (feature detection).
