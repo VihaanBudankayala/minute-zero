@@ -89,7 +89,8 @@ below were rewritten to fix that.)
   7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`, 11 `give-sugar.webp`.
 - 9 `auto-injector.webp`: first try rejected (top of the thigh, safety cap still on); second try used
   (cap off, outer front of the mid-thigh; marked VERIFY in content.js).
-- 10 naloxone: rejected TWICE (drawn as a syringe both times); prompt rewritten a third time (Oct 25).
+- 10 `naloxone.webp`: rejected twice (drawn as a syringe); the third prompt (no word "plunger", device described by
+  shape and grip) worked and is used. All 11 pictures are done.
 
 ## What Claude checks before a picture goes in
 - Matches the step text exactly (e.g. fist **above the belly button**, injector on the **outer thigh**,

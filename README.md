@@ -66,5 +66,5 @@ Everything stays on the phone. No accounts, no server, nothing is sent anywhere 
 
 ## Credits
 - Illustrations: [source to be added by the author]
-- Step pictures for the AED and firm-surface steps, choking, severe allergic reaction, low blood sugar, possible heart attack, seizure and stroke (lying on their side): made with Google Gemini (AI) from the prompts in `PICTURE-PROMPTS.md`, then checked against the step text and cropped to remove generated captions.
+- Step pictures for the AED and firm-surface steps, choking, severe allergic reaction, opioid overdose, low blood sugar, possible heart attack, seizure and stroke (lying on their side): made with Google Gemini (AI) from the prompts in `PICTURE-PROMPTS.md`, then checked against the step text and cropped to remove generated captions.
 - Built with help from Claude (Anthropic) as a pair-programming partner. See `DEVLOG.md` for the technical problems and how they were solved.

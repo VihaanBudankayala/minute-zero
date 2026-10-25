@@ -778,3 +778,7 @@ and the picture 230 px. **Fix, in two parts:**
    it, it's back in its normal place. A `box-shadow` in the background color stops text peeking out behind it.
 **Tested:** all 56 guided steps on 360×640, 375×667 and 390×844: Done is always on screen, tapping it while
 it's stuck works and logs the step, and at the bottom of the page it doesn't cover Back / Skip.
+Naloxone took three tries: twice the model drew a **syringe**, which would teach the wrong device. The fix was in
+the wording: the prompt said "thumb on the plunger", and "plunger" makes the model think of a syringe. The third
+prompt described the spray by its shape and grip instead (thumb-sized, nozzle on top, two fingers beside the
+nozzle, thumb on the bottom) and said what it is NOT. That one was right. All 11 planned pictures are now in.

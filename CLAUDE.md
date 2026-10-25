@@ -67,7 +67,7 @@
 - When the first AI picture goes in: update CONTENT.about.illustrations + README Credits to say which pictures
   were made with Google Gemini (AI). The student checks the Congressional App Challenge rules on AI-made content.
 - Lower priority than the demo video and the VERIFY items.
-- IN USE (?v=13, CACHE v13): 10 of 11 (+ auto-injector, VERIFY); naloxone rejected twice (syringe), not used.
+- IN USE (?v=14, CACHE v14): ALL 11 (auto-injector marked VERIFY; naloxone = third try after two syringes).
   Guided Done / Yes-No row are position:sticky at the bottom (always on screen); smaller pictures under 760px tall.
 - Earlier: 9 of 11 — aed-fetch, lay-on-back, choking-sign, back-blows (arrow removed),
   abdominal-thrusts, seizure-clear-area, give-sugar, sit-and-rest, on-side (seizure 4 + stroke 10); captions cropped; credit added.

@@ -495,7 +495,7 @@ const CONTENT = {
     // TODO (student): when your own drawings replace these, change this to
     // "Illustrations drawn by <your name>."
     // TODO (student): say where the CPR and pressure pictures came from (see CLAUDE.md, Images).
-    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for the AED and firm-surface steps, choking, severe allergic reaction, low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
+    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for the AED and firm-surface steps, choking, severe allergic reaction, opioid overdose, low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
     madeFor: "Made for the 2026 Congressional App Challenge.",
     sourcesTitle: "Official sources",
     sourcesIntro:
@@ -1076,6 +1076,7 @@ const CONTENT = {
         {
           // VERIFY: wording; follow the package instructions (nasal spray or injection).
           text: "Give naloxone (Narcan) if you have it. Follow the instructions on the package.",
+          image: { src: "images/naloxone.webp", alt: "A person lies on their back with eyes closed. A helper kneels at their head, supports the back of the neck so the head tilts back, and holds a small nasal spray with its nozzle in one nostril." },
           log: "Naloxone (Narcan) given",
           doneLabel: "Naloxone given",
           source: "2025 AHA CPR & ECC Guidelines, Part 7; 2024 AHA & American Red Cross First Aid Guidelines",
