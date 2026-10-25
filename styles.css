@@ -924,21 +924,54 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 /* "Your people": amber outline, so they stand out from "Other situations". */
 .scenario-btn.is-person { border-color: var(--warn); }
 
-/* Home menu (the tutorial, My people, Settings and About live inside it) */
-.home-menu { width: 100%; margin-top: 16px; border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); }
-.home-menu summary {
-  min-height: var(--tap-min);
+/* ☰ button (top right, before START only) and the ✕ that closes the menu */
+.btn-menu {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
-  font-weight: 800;
+  flex: none;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.4rem;
   cursor: pointer;
 }
-.home-menu summary:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
-.home-menu[open] summary { border-bottom: 1px solid var(--border); }
-.home-links { width: 100%; padding: 12px; }
+.btn-menu .icon { width: 28px; height: 28px; fill: currentColor; }
+.btn-menu:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+.is-active #btn-menu { display: none; }   /* during an emergency, Reset time / Start over sit here */
+
+/* Side menu: a <dialog> pinned to the right edge, full height. */
+.side-menu {
+  inset: 0 0 0 auto;           /* top right bottom left: stick to the right side */
+  margin: 0;
+  width: min(85vw, 22rem);
+  height: 100%;
+  max-height: none;
+  padding: 0;
+  border: none;
+  border-left: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  animation: slide-in 0.2s ease-out;
+}
+.side-menu::backdrop { background: rgba(0, 0, 0, 0.7); }
+.side-menu-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+.side-menu-head { display: flex; align-items: center; justify-content: space-between; }
+.side-menu-head h2 { margin: 0; }
+@keyframes slide-in { from { transform: translateX(100%); } to { transform: none; } }
+.calm .side-menu { animation: none; }
 .btn-howto.is-new { border-style: dashed; border-color: var(--warn); color: var(--warn); }
 
 /* Tutorial */
@@ -1074,6 +1107,7 @@ html.text-xlarge { font-size: 125%; }
 /* Some people get dizzy or distracted by motion and turn on "Reduce motion"
    in their phone settings. We respect that: no pulsing, just a steady glow. */
 @media (prefers-reduced-motion: reduce) {
+  .side-menu { animation: none; }
   .btn-start, .btn-cpr-start, .ring, .btn-call::after, .rec-dot { animation: none; }
   /* (The CPR beat circle uses a brightness flash instead; see pulseCircle in app.js.) */
   .ring { display: none; }

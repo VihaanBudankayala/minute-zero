@@ -132,8 +132,6 @@ function showScreen(screenId) {
   });
   // On the handoff screen, CSS hides the 911 card, banner and event log.
   document.body.classList.toggle("on-handoff", screenId === "screen-handoff");
-  // Fold the home menu again, so home looks the same every time you come back.
-  byId("home-menu").open = false;
   window.scrollTo(0, 0);
 }
 
@@ -1874,6 +1872,19 @@ function closeResetConfirm() {
   else dialog.removeAttribute("open");
 }
 
+// ☰ Side menu (top bar). Same <dialog> idea as the Start over popup.
+function openMenu() {
+  const dialog = byId("side-menu");
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function closeMenu() {
+  const dialog = byId("side-menu");
+  if (typeof dialog.close === "function") dialog.close();
+  else dialog.removeAttribute("open");
+}
+
 function resetEverything() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   metronomeStop();
@@ -2265,6 +2276,16 @@ function init() {
   byId("set-read").addEventListener("change", (e) => changeSettings({ readAloud: e.target.checked }));
   document.querySelectorAll(".js-back-home").forEach((button) => {
     button.addEventListener("click", () => showScreen("screen-home"));
+  });
+  // ☰ menu. The buttons have no visible text, so screen readers get a label.
+  byId("btn-menu").setAttribute("aria-label", CONTENT.home.menu);
+  byId("btn-menu-close").setAttribute("aria-label", CONTENT.home.closeMenu);
+  byId("btn-menu").addEventListener("click", openMenu);
+  byId("btn-menu-close").addEventListener("click", closeMenu);
+  byId("side-menu").addEventListener("click", (event) => {
+    // A tap on the dimmed page beside the menu lands on the <dialog> itself
+    // (the inner box covers the rest), so that closes it. So does choosing an item.
+    if (event.target === event.currentTarget || event.target.closest(".btn")) closeMenu();
   });
   byId("btn-reset").addEventListener("click", openResetConfirm);
   byId("btn-reset-time").addEventListener("click", resetTime);

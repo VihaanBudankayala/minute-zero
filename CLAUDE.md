@@ -135,8 +135,9 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
-## Sun Oct 25 (newest): home "☰ Menu" (<details id="home-menu">) holds How to use / My people / Settings / About;
-## showScreen() folds it again. ?v=7, CACHE_VERSION v7.
+## Sun Oct 25 (newest): ☰ button (#btn-menu) at the top right of top-bar row 1, BEFORE START only (during an
+## emergency Reset time / Start over sit there). Opens <dialog id="side-menu"> sliding in from the right:
+## How to use / My people / Settings / About. Closes on ✕, Esc, a tap beside it, or choosing an item. ?v=8, CACHE v8.
 
 ## Update 7 — ✅ BUILT (student chose ALL FOUR). ?v=6 and CACHE_VERSION v6. Keys: minutezero.settings / .people / .tutorialSeen.
 Student asked for: (1) highlight priority buttons, (2) a tutorial screen when the app opens, (3) features for

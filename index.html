@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#161616">
   <title>Minute Zero</title>
-  <!-- "?v=7": bump this number (and CACHE_VERSION in sw.js) after every change,
+  <!-- "?v=8": bump this number (and CACHE_VERSION in sw.js) after every change,
        so browsers fetch the new file instead of an old saved one. -->
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
   <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -31,8 +31,17 @@
         <!-- role="timer" tells screen readers this is a clock. -->
         <div id="clock" class="clock" role="timer" aria-label="Elapsed time">--:--</div>
       </div>
-      <!-- Only shown during an emergency (CSS). -->
       <div class="topbar-tools">
+        <!-- ☰ Menu: three lines drawn with SVG. Only shown BEFORE START (CSS), so no one
+             leaves the CPR screen for Settings by mistake. -->
+        <button id="btn-menu" class="btn-menu" type="button" aria-haspopup="dialog" aria-controls="side-menu">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="2.5" rx="1.25"/>
+            <rect x="3" y="10.75" width="18" height="2.5" rx="1.25"/>
+            <rect x="3" y="16.5" width="18" height="2.5" rx="1.25"/>
+          </svg>
+        </button>
+        <!-- The two reset buttons are only shown during an emergency (CSS). -->
         <!-- Restarts the elapsed clock at 0:00 (logged; Undo works). -->
         <button id="btn-reset-time" class="btn-reset" type="button" data-content="reset.timeButton"></button>
         <!-- Erases the log and goes back to START, after an "Are you sure?" popup. -->
@@ -67,6 +76,23 @@
     <!-- "Are you sure?" popup for Start over. <dialog> is the browser's own popup
          element: showModal() dims the page behind it and keeps focus inside it.
          (Unlike confirm(), it's big, readable and never blocked.) -->
+    <!-- Side menu, opened by ☰ in the top bar. Also a <dialog>: showModal() dims the
+         page, keeps focus inside, and the Esc key / Back gesture closes it. -->
+    <dialog id="side-menu" class="side-menu" aria-labelledby="side-menu-title">
+      <div class="side-menu-inner">
+        <div class="side-menu-head">
+          <h2 id="side-menu-title" data-content="home.menu"></h2>
+          <button id="btn-menu-close" class="btn-menu" type="button">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+        <button id="btn-howto" class="btn btn-howto" type="button"></button>
+        <button id="btn-people" class="btn" type="button" data-content="home.myPeople"></button>
+        <button id="btn-settings" class="btn" type="button" data-content="home.settings"></button>
+        <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
+      </div>
+    </dialog>
+
     <dialog id="startover-dialog" class="startover-dialog" aria-labelledby="reset-question">
       <div class="stack">
         <p id="reset-question" class="reset-question" data-content="reset.question"></p>
@@ -145,16 +171,6 @@
         This app does not replace calling 911 or formal first-aid training.
       </p>
       <!-- Home links (Update 7). None of these is ever needed before START. -->
-      <!-- Menu: <details> is the browser's built-in open/close box (no JS needed to open it). -->
-      <details id="home-menu" class="home-menu">
-        <summary><span aria-hidden="true">☰</span> <span data-content="home.menu"></span></summary>
-        <div class="home-links stack">
-          <button id="btn-howto" class="btn btn-howto" type="button"></button>
-          <button id="btn-people" class="btn" type="button" data-content="home.myPeople"></button>
-          <button id="btn-settings" class="btn" type="button" data-content="home.settings"></button>
-          <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
-        </div>
-      </details>
     </section>
 
     <!-- SCREEN: Tutorial (Update 7). Opened only from the home screen or About,
@@ -604,7 +620,7 @@
 
   <!-- Order matters: content.js defines CONTENT, then app.js uses it.
        Scripts go at the end of <body> so the HTML above already exists. -->
-  <script src="content.js?v=7"></script>
-  <script src="app.js?v=7"></script>
+  <script src="content.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
