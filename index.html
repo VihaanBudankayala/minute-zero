@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#161616">
   <title>Minute Zero</title>
-  <!-- "?v=5": bump this number (and CACHE_VERSION in sw.js) after every change,
+  <!-- "?v=6": bump this number (and CACHE_VERSION in sw.js) after every change,
        so browsers fetch the new file instead of an old saved one. -->
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
   <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -144,7 +144,80 @@
       <p class="disclaimer" role="note" data-content="disclaimer">
         This app does not replace calling 911 or formal first-aid training.
       </p>
-      <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
+      <!-- Home links (Update 7). None of these is ever needed before START. -->
+      <div class="home-links stack">
+        <button id="btn-howto" class="btn btn-howto" type="button"></button>
+        <button id="btn-people" class="btn" type="button" data-content="home.myPeople"></button>
+        <button id="btn-settings" class="btn" type="button" data-content="home.settings"></button>
+        <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
+      </div>
+    </section>
+
+    <!-- SCREEN: Tutorial (Update 7). Opened only from the home screen or About,
+         never automatically, so it can't delay anyone in a real emergency. -->
+    <section id="screen-tutorial" class="screen stack" hidden>
+      <h2 data-content="tutorial.heading"></h2>
+      <p id="tutorial-counter" class="step-counter" aria-live="polite"></p>
+      <div class="tutorial-card stack">
+        <h3 id="tutorial-title"></h3>
+        <p id="tutorial-text"></p>
+      </div>
+      <button id="btn-tutorial-next" class="btn btn-primary btn-tall" type="button"></button>
+      <div class="row">
+        <button id="btn-tutorial-back" class="btn" type="button" data-content="tutorial.back"></button>
+        <button id="btn-tutorial-skip" class="btn" type="button" data-content="tutorial.skip"></button>
+      </div>
+    </section>
+
+    <!-- SCREEN: My people (Update 7): known conditions, saved only on this phone. -->
+    <section id="screen-people" class="screen stack" hidden>
+      <h2 data-content="myPeople.heading"></h2>
+      <p data-content="myPeople.intro"></p>
+      <p class="muted small" data-content="myPeople.privacy"></p>
+      <ul id="people-list" class="people-list"></ul>
+      <button id="btn-add-person" class="btn" type="button" data-content="myPeople.add"></button>
+
+      <form id="person-form" class="person-form stack" hidden>
+        <label for="person-name" class="form-label" data-content="myPeople.nameLabel"></label>
+        <input id="person-name" type="text" autocomplete="off">
+        <fieldset class="person-conditions">
+          <legend class="form-label" data-content="myPeople.conditionsLabel"></legend>
+          <div id="person-conditions" class="stack"></div>
+        </fieldset>
+        <label for="person-notes" class="form-label" data-content="myPeople.notesLabel"></label>
+        <textarea id="person-notes" rows="3"></textarea>
+        <p id="person-error" class="form-error" role="alert" hidden></p>
+        <div class="row">
+          <button class="btn btn-primary" type="submit" data-content="myPeople.save"></button>
+          <button id="btn-person-cancel" class="btn" type="button" data-content="myPeople.cancel"></button>
+        </div>
+      </form>
+
+      <button class="btn btn-ghost js-back-home" type="button" data-content="myPeople.back"></button>
+    </section>
+
+    <!-- SCREEN: Settings (Update 7). Saved only on this phone. -->
+    <section id="screen-settings" class="screen stack" hidden>
+      <h2 data-content="settings.heading"></h2>
+      <p class="muted small" data-content="settings.note"></p>
+
+      <h3 data-content="settings.presetsTitle"></h3>
+      <div id="settings-presets" class="stack"></div>
+
+      <fieldset class="settings-group">
+        <legend class="form-label" data-content="settings.textSizeTitle"></legend>
+        <div id="settings-textsize" class="answer-row"></div>
+      </fieldset>
+
+      <fieldset class="settings-group">
+        <legend class="form-label" data-content="settings.optionsTitle"></legend>
+        <label class="toggle"><input id="set-calm" type="checkbox"> <span data-content="settings.calm"></span></label>
+        <label class="toggle"><input id="set-sound" type="checkbox"> <span data-content="settings.sound"></span></label>
+        <label class="toggle"><input id="set-read" type="checkbox"> <span data-content="settings.readAloud"></span></label>
+      </fieldset>
+
+      <p id="settings-saved" class="copy-status" role="status" hidden></p>
+      <button class="btn btn-primary js-back-home" type="button" data-content="settings.back"></button>
     </section>
 
     <!-- SCREEN: About & Sources (Milestone 6). The lists are built by app.js
@@ -175,6 +248,7 @@
       <button id="btn-delete-all" class="btn" type="button" data-content="about.deleteAll"></button>
       <p id="delete-status" class="copy-status" role="status" hidden></p>
 
+      <button id="btn-about-howto" class="btn" type="button" data-content="about.howTo"></button>
       <button id="btn-about-back" class="btn btn-primary" type="button" data-content="about.back"></button>
     </section>
 
@@ -445,6 +519,10 @@
           <div id="handoff-times" class="handoff-times"></div>
           <p class="handoff-total"><span data-content="handoff.totalTime"></span>: <strong id="handoff-total"></strong></p>
 
+          <div id="handoff-person-box" class="stack handoff-person" hidden>
+            <h3 data-content="myPeople.handoffTitle"></h3>
+            <ul id="handoff-person" class="handoff-list"></ul>
+          </div>
           <div id="handoff-findings-box" class="stack" hidden>
             <h3 data-content="handoff.findings"></h3>
             <ul id="handoff-findings" class="handoff-list"></ul>
@@ -522,7 +600,7 @@
 
   <!-- Order matters: content.js defines CONTENT, then app.js uses it.
        Scripts go at the end of <body> so the HTML above already exists. -->
-  <script src="content.js?v=5"></script>
-  <script src="app.js?v=5"></script>
+  <script src="content.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

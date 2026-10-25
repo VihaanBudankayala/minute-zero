@@ -53,6 +53,93 @@ const CONTENT = {
   call911Button: "Call 911",
   text911Button: "Text 911",
 
+  // ---------- Home screen links (Update 7) ----------
+  home: {
+    howTo: "New here? See how it works (30 sec)",   // shown until the tutorial is seen once
+    howToAgain: "How to use Minute Zero",
+    myPeople: "My people (medical info)",
+    settings: "Settings",
+  },
+
+  // ---------- Tutorial (Update 7) ----------
+  // Never shown automatically: someone may open the app for the first time
+  // DURING an emergency, so it must never stand between them and START.
+  tutorial: {
+    heading: "How Minute Zero works",
+    next: "Next",
+    back: "Back",
+    skip: "Skip",
+    done: "Got it",
+    cards: [
+      { title: "1. Call 911 first", text: "The red Call 911 button is always at the top. Can't talk? Use Text 911 next to it. Put the call on speaker." },
+      { title: "2. Tap START", text: "It starts a clock and a log of everything you do, with the time. Paramedics need those times." },
+      { title: "3. Pick what you see", text: "Each button lists the signs to look for. Not sure? Answer a few yes/no questions. Not responding and not breathing normally goes straight to CPR." },
+      { title: "4. Follow the dispatcher, then tap to log", text: "If the 911 dispatcher is giving instructions, follow them and tap the big buttons to log what you do. If no one is helping, the app guides you step by step." },
+      { title: "5. Show the handoff to paramedics", text: "When EMS arrives, tap \"Handoff for paramedics\". It shows the key times and everything you logged." },
+    ],
+  },
+
+  // ---------- My people: known conditions (Update 7) ----------
+  // Facts the user enters about themselves or family. The app never diagnoses;
+  // it only moves those situations to the top and shows the info to paramedics.
+  myPeople: {
+    heading: "My people",
+    intro: "Add yourself or family members and what they've been diagnosed with. Those situations move to the top of \"What's happening?\", and if you pick that person in an emergency, their info is shown to paramedics.",
+    privacy: "Saved only on this phone. Nothing is sent anywhere.",
+    add: "Add a person",
+    nameLabel: "Name or relationship",
+    namePlaceholder: "Example: Dad",
+    conditionsLabel: "Diagnosed with (tick all that apply)",
+    notesLabel: "Notes for paramedics (optional)",
+    notesPlaceholder: "Example: Allergic to peanuts. EpiPen in the kitchen drawer. Takes insulin.",
+    save: "Save",
+    cancel: "Cancel",
+    edit: "Edit",
+    remove: "Remove",
+    confirmRemove: "Tap again to remove",
+    empty: "No one added yet.",
+    needName: "Please enter a name or relationship.",
+    // Each condition points to the situation it relates to.
+    conditions: [
+      { id: "epilepsy", label: "Epilepsy or seizures", scenario: "seizure" },
+      { id: "diabetes", label: "Diabetes", scenario: "lowsugar" },
+      { id: "allergy", label: "Severe allergy (has needed epinephrine)", scenario: "allergy" },
+      { id: "heart", label: "Heart disease or a past heart attack", scenario: "heart" },
+      { id: "stroke", label: "Had a stroke before", scenario: "stroke" },
+      { id: "opioid", label: "Takes opioid pain medicine", scenario: "opioid" },
+    ],
+    pickerHeading: "Your people",
+    pickerFor: "for",                 // "Seizure for Dad"
+    logPerson: "Person:",             // "Person: Dad (Epilepsy or seizures)"
+    handoffTitle: "Saved medical info (entered by the user)",
+    back: "Back",
+  },
+
+  // ---------- Settings (Update 7) ----------
+  settings: {
+    heading: "Settings",
+    note: "Saved only on this phone.",
+    presetsTitle: "Presets",
+    presets: [
+      { id: "standard", label: "Standard", values: { textSize: "normal", calm: false, sound: true, readAloud: false } },
+      { id: "large", label: "Large text", values: { textSize: "large", calm: false, sound: true, readAloud: false } },
+      { id: "calm", label: "Calm (no pulsing)", values: { textSize: "normal", calm: true, sound: true, readAloud: false } },
+      { id: "handsfree", label: "Hands-free (reads steps aloud)", values: { textSize: "large", calm: false, sound: true, readAloud: true } },
+    ],
+    textSizeTitle: "Text size",
+    textSizes: [
+      { id: "normal", label: "Normal" },
+      { id: "large", label: "Large" },
+      { id: "xlarge", label: "Extra large" },
+    ],
+    optionsTitle: "Options",
+    calm: "Calm: no pulsing or moving animations",
+    sound: "CPR beat sound on when CPR starts",
+    readAloud: "Read steps aloud from the start",
+    saved: "✓ Saved",
+    back: "Back",
+  },
+
   // ---------- Top bar: Reset time + Start over ----------
   reset: {
     timeButton: "Reset time",
@@ -466,6 +553,7 @@ const CONTENT = {
     deleted: "✓ Deleted. Nothing is saved on this phone.",
     back: "Back",
     sourceLabel: "Source:", // shown under each guided step
+    howTo: "How to use Minute Zero",
   },
 
   // ---------- Event log panel ----------

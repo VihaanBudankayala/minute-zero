@@ -694,3 +694,34 @@ showed the new CSS on the first reload, and offline kept the new CSS.
 ### Wide screens
 On a 1900-px laptop the Call/Text buttons stretched to ~930 px each. The top bar now uses the same
 max width as the app (40rem), centered.
+
+---
+
+## Update 7 — Priority highlight, tutorial, My people, Settings
+
+### Priority highlight
+One consistent "do this first" look: solid red for single actions (Call 911, START, START CPR,
+Done, "Yes, the dispatcher is helping me") and a red-tinted fill with a thick red outline for the
+three urgent situations (white text on the tint = 16.4:1). Everything else stays calmer.
+
+### Tutorial that can't get in the way
+Someone might open the app for the very first time *during* an emergency, so the tutorial never
+opens by itself. A highlighted "New here? See how it works (30 sec)" link on the home screen
+opens 5 short cards; after it's seen once (saved with `localStorage`), the link becomes a plain
+"How to use Minute Zero". It's also on the About screen.
+
+### My people: known conditions, never a diagnosis
+Users can save themselves or family members with diagnosed conditions and notes. Each condition
+points to a situation in `content.js` (epilepsy → Seizure, diabetes → Low blood sugar, ...), so a
+"Your people" section ("Seizure for Dad") appears on "What's happening?". Choosing it logs a
+**snapshot** of that person's info (kind `person`), so the handoff shows exactly what was known at
+that moment, even if the info is edited later. Saved only on the phone; typed text is always shown
+with `textContent` (tested with `<b>` in the notes: shown as plain text). Removing takes two taps.
+
+### Settings and presets
+Text size works by changing the root font size: almost every size in `styles.css` is in `rem`
+(a multiple of the root size), so one class (`text-large` = 112.5%) scales the whole app. Calm
+turns off pulsing like the phone's "Reduce motion". Presets are just bundles of values in
+`content.js`; the preset whose values all match the current settings is shown as selected.
+Settings, people and the tutorial flag are saved separately from the emergency log, so
+"Start over" keeps them, and "Delete everything saved on this phone" (About) removes all of it.

@@ -135,6 +135,23 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
+## Update 7 — ✅ BUILT (student chose ALL FOUR). ?v=6 and CACHE_VERSION v6. Keys: minutezero.settings / .people / .tutorialSeen.
+Student asked for: (1) highlight priority buttons, (2) a tutorial screen when the app opens, (3) features for
+conditions the user or their family is diagnosed with, (4) a settings page with layout choices and presets.
+Claude's recommendations (time estimates include testing):
+1. Priority highlight (~30 min): one consistent "do this first" style (Call 911, START, START CPR, the urgent
+   situations, Done); everything else calmer. YES.
+2. Tutorial (~45 min): NEVER block START on first open (someone may open the app for the first time DURING an
+   emergency). Instead: a one-time "New here? See how it works (30 sec)" link on the home screen + a short
+   3-card tutorial, skippable, reachable later from About. YES, in that safe form.
+3. "My people" medical info (~2 h): user ticks known conditions for themselves/family (e.g. diabetes, epilepsy,
+   severe allergy + their auto-injector, heart disease) → those situations are pinned to the top of
+   "What's happening?" and listed on the paramedic handoff. Stored only on the phone. User-entered facts, never
+   a diagnosis by the app. Only if time allows after the video.
+4. Settings + presets (~1.5 h): text size, "Calm" (no pulsing), sound on/off by default, read-aloud by default;
+   presets "Standard", "Large text", "Calm". Only if time allows after the video.
+Recommended order: 1 + 2 now → record the video → 3/4 only if time remains (else README "future ideas").
+
 ## Sun Oct 25 (newest): top bar row 1 = clock · [Reset time] [Start over]. Reset time logs kind "timerReset"
 ## (clockZero()); Start over = <dialog> popup → erase + reload to START. Files load as ?v=5: BUMP ?v= in index.html
 ## AND CACHE_VERSION in sw.js (now v5) on EVERY change. sw.js: network first (no-cache, 3 s), keys without ?query.

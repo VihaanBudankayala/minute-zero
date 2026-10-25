@@ -283,6 +283,8 @@ function startEmergency() {
 
   state.startTime = Date.now();
   state.timeline = [];
+  state.readAloud = settings.readAloud; // default from Settings
+  refreshReadAloudButton();
   beginSession();
 
   logEvent(CONTENT.log.emergencyStarted); // this also replaces any old saved session
@@ -369,6 +371,7 @@ function makeChoiceButton(className, labelText, hintText, onClick) {
 // situations (big), then the other situations (smaller).
 function renderPicker() {
   const list = byId("scenario-list");
+  list.replaceChildren(); // can be redrawn (e.g. after editing "My people")
   const ids = CONTENT.scenarioOrder;
   const urgent = ids.filter((id) => CONTENT.scenarios[id].urgent);
   const others = ids.filter((id) => !CONTENT.scenarios[id].urgent);
@@ -386,6 +389,26 @@ function renderPicker() {
     const scenario = CONTENT.scenarios[id];
     list.append(makeChoiceButton("btn scenario-btn is-urgent", scenario.label, scenario.hint,
       () => chooseScenario(id)));
+  }
+
+  // "Your people": situations linked to conditions saved in My people (Update 7).
+  const people = loadPeople();
+  const personButtons = [];
+  for (const person of people) {
+    for (const conditionId of person.conditions) {
+      const condition = CONTENT.myPeople.conditions.find((c) => c.id === conditionId);
+      if (!condition) continue;
+      const scenario = CONTENT.scenarios[condition.scenario];
+      personButtons.push(makeChoiceButton("btn scenario-btn is-person",
+        `${scenario.label} ${CONTENT.myPeople.pickerFor} ${person.name}`, condition.label,
+        () => choosePerson(person, condition.scenario)));
+    }
+  }
+  if (personButtons.length > 0) {
+    const peopleHeading = document.createElement("h3");
+    peopleHeading.className = "picker-subheading";
+    peopleHeading.textContent = CONTENT.myPeople.pickerHeading;
+    list.append(peopleHeading, ...personButtons); // "..." spreads the list into separate arguments
   }
 
   const heading = document.createElement("h3");
@@ -822,7 +845,7 @@ function showBeatText() {
 // instead of movement.
 function pulseCircle() {
   const circle = byId("beat-circle");
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = settings.calm || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const frames = reduceMotion
     ? [{ filter: "brightness(1.6)" }, { filter: "brightness(1)" }]
     : [{ transform: "scale(0.9)" }, { transform: "scale(1)" }];
@@ -1389,7 +1412,17 @@ function buildHandoff() {
   const dispatcher = first(CONTENT.log.modeDispatcher);
   if (dispatcher) details.push(`${H.dispatcher}: ${H.yes} (${formatShortTime(dispatcher.time)})`);
 
+  // The person chosen from "Your people" (a snapshot saved in the log).
+  const person = [];
+  const chosen = newestOfKind("person");
+  if (chosen) {
+    person.push(chosen.personName);
+    if (chosen.conditionLabels.length) person.push(chosen.conditionLabels.join(", "));
+    if (chosen.notes) person.push(chosen.notes);
+  }
+
   return {
+    person: person,
     situation: situation,
     keyTimes: keyTimes,
     totalTime: formatElapsed(Date.now() - state.startTime),
@@ -1441,6 +1474,7 @@ function renderHandoff() {
     times.append(div);
   }
 
+  fillList("handoff-person", "handoff-person-box", data.person);
   fillList("handoff-findings", "handoff-findings-box", data.findings);
   fillList("handoff-checks", "handoff-checks-box", data.checks);
   fillList("handoff-details", "handoff-details-box", data.details);
@@ -1488,6 +1522,7 @@ function handoffText() {
     if (items.length === 0) return;
     lines.push(title.toUpperCase(), ...items.map((x) => `- ${x}`), "");
   };
+  section(CONTENT.myPeople.handoffTitle, data.person);
   section(H.findings, data.findings);
   section(H.checks, data.checks);
   section(H.details, data.details);
@@ -1636,6 +1671,13 @@ function deleteAll() {
     return;
   }
   deleteSavedSession();
+  for (const key of [SETTINGS_KEY, PEOPLE_KEY, TUTORIAL_KEY]) {
+    try { localStorage.removeItem(key); } catch (err) { /* nothing to do */ }
+  }
+  settings = { ...DEFAULT_SETTINGS };
+  applySettings();
+  refreshHowToButton();
+  renderPicker();
   deleteAllArmed = false;
   button.textContent = CONTENT.about.deleteAll;
   byId("resume-card").hidden = true;
@@ -1838,15 +1880,323 @@ function resetEverything() {
 }
 
 // ============================================================
-// 24. START-UP: connect buttons to functions
+// 24. SETTINGS (Update 7): text size, Calm, sound and read-aloud defaults.
+// Saved separately from the emergency log, so Start over keeps them.
+// ============================================================
+const SETTINGS_KEY = "minutezero.settings";
+const DEFAULT_SETTINGS = { textSize: "normal", calm: false, sound: true, readAloud: false };
+let settings = { ...DEFAULT_SETTINGS }; // { ...x } makes a copy, like dict(x) in Python
+
+function loadSettings() {
+  try {
+    const text = localStorage.getItem(SETTINGS_KEY);
+    if (text) settings = { ...DEFAULT_SETTINGS, ...JSON.parse(text) };
+  } catch (err) {
+    // keep the defaults
+  }
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch (err) {
+    // not saved, but still applied for now
+  }
+}
+
+// Text size works by changing the root font size: almost every size in
+// styles.css is in "rem" (a multiple of the root size), so everything grows.
+function applySettings() {
+  const root = document.documentElement;
+  root.classList.remove("text-large", "text-xlarge");
+  if (settings.textSize !== "normal") root.classList.add(`text-${settings.textSize}`);
+  root.classList.toggle("calm", settings.calm);
+  metronome.soundOn = settings.sound;
+  refreshCprControls();
+}
+
+function changeSettings(newValues) {
+  settings = { ...settings, ...newValues };
+  saveSettings();
+  applySettings();
+  renderSettings();
+  byId("settings-saved").textContent = CONTENT.settings.saved;
+  byId("settings-saved").hidden = false;
+}
+
+// A row of toggle buttons; the chosen one is marked (aria-pressed + check mark).
+function renderSettings() {
+  const presets = byId("settings-presets");
+  presets.replaceChildren();
+  for (const preset of CONTENT.settings.presets) {
+    const active = Object.entries(preset.values).every(([key, value]) => settings[key] === value);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = active ? "btn is-on" : "btn";
+    button.setAttribute("aria-pressed", String(active));
+    button.textContent = active ? `✓ ${preset.label}` : preset.label;
+    button.addEventListener("click", () => changeSettings(preset.values));
+    presets.append(button);
+  }
+
+  const sizes = byId("settings-textsize");
+  sizes.replaceChildren();
+  for (const size of CONTENT.settings.textSizes) {
+    const active = settings.textSize === size.id;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = active ? "btn is-on" : "btn";
+    button.setAttribute("aria-pressed", String(active));
+    button.textContent = active ? `✓ ${size.label}` : size.label;
+    button.addEventListener("click", () => changeSettings({ textSize: size.id }));
+    sizes.append(button);
+  }
+
+  byId("set-calm").checked = settings.calm;
+  byId("set-sound").checked = settings.sound;
+  byId("set-read").checked = settings.readAloud;
+}
+
+function openSettings() {
+  byId("settings-saved").hidden = true;
+  renderSettings();
+  showScreen("screen-settings");
+}
+
+// ============================================================
+// 25. TUTORIAL (Update 7). Only opened from the home screen or About.
+// ============================================================
+const TUTORIAL_KEY = "minutezero.tutorialSeen";
+let tutorialIndex = 0;
+
+function tutorialSeen() {
+  try { return localStorage.getItem(TUTORIAL_KEY) === "1"; } catch (err) { return false; }
+}
+
+// Until it's been seen once, the home link is highlighted: "New here? ..."
+function refreshHowToButton() {
+  const seen = tutorialSeen();
+  const button = byId("btn-howto");
+  button.textContent = seen ? CONTENT.home.howToAgain : CONTENT.home.howTo;
+  button.classList.toggle("is-new", !seen);
+}
+
+function openTutorial() {
+  tutorialIndex = 0;
+  renderTutorial();
+  showScreen("screen-tutorial");
+}
+
+function renderTutorial() {
+  const T = CONTENT.tutorial;
+  const card = T.cards[tutorialIndex];
+  const last = tutorialIndex === T.cards.length - 1;
+  byId("tutorial-counter").textContent = `${tutorialIndex + 1} ${CONTENT.ofLabel} ${T.cards.length}`;
+  byId("tutorial-title").textContent = card.title;
+  byId("tutorial-text").textContent = card.text;
+  byId("btn-tutorial-next").textContent = last ? T.done : T.next;
+  byId("btn-tutorial-back").disabled = tutorialIndex === 0;
+  byId("btn-tutorial-skip").hidden = last;
+}
+
+function tutorialNext() {
+  if (tutorialIndex === CONTENT.tutorial.cards.length - 1) {
+    finishTutorial();
+  } else {
+    tutorialIndex++;
+    renderTutorial();
+  }
+}
+
+function finishTutorial() {
+  try { localStorage.setItem(TUTORIAL_KEY, "1"); } catch (err) { /* fine */ }
+  refreshHowToButton();
+  showScreen("screen-home");
+}
+
+// ============================================================
+// 26. MY PEOPLE (Update 7): conditions the user or their family have been
+// diagnosed with. Saved only on this phone. The app never diagnoses: these
+// are facts the user typed in, used to move situations to the top and to
+// show paramedics the person's info if that person is chosen.
+// ============================================================
+const PEOPLE_KEY = "minutezero.people";
+let editingIndex = null;   // which person the form is editing (null = new person)
+let removeArmed = null;    // which person's Remove was tapped once
+
+function loadPeople() {
+  try {
+    const list = JSON.parse(localStorage.getItem(PEOPLE_KEY));
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    return [];
+  }
+}
+
+function savePeople(list) {
+  try {
+    localStorage.setItem(PEOPLE_KEY, JSON.stringify(list));
+  } catch (err) {
+    // couldn't save (e.g. private browsing)
+  }
+}
+
+function conditionLabels(person) {
+  return person.conditions
+    .map((id) => CONTENT.myPeople.conditions.find((c) => c.id === id))
+    .filter(Boolean)          // drop unknown ids
+    .map((c) => c.label);
+}
+
+function renderPeople() {
+  const M = CONTENT.myPeople;
+  const list = byId("people-list");
+  list.replaceChildren();
+  const people = loadPeople();
+  if (people.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "muted";
+    empty.textContent = M.empty;
+    list.append(empty);
+  }
+  people.forEach((person, index) => {
+    const item = document.createElement("li");
+    item.className = "person-card stack";
+
+    const name = document.createElement("p");
+    name.className = "person-name";
+    name.textContent = person.name;           // textContent: typed text is never run as code
+    const conditions = document.createElement("p");
+    conditions.textContent = conditionLabels(person).join(", ");
+    item.append(name, conditions);
+    if (person.notes) {
+      const notes = document.createElement("p");
+      notes.className = "muted";
+      notes.textContent = person.notes;
+      item.append(notes);
+    }
+
+    const row = document.createElement("div");
+    row.className = "row";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "btn";
+    edit.textContent = M.edit;
+    edit.addEventListener("click", () => openPersonForm(index));
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "btn";
+    remove.textContent = removeArmed === index ? M.confirmRemove : M.remove;
+    remove.addEventListener("click", () => removePerson(index));
+    row.append(edit, remove);
+    item.append(row);
+    list.append(item);
+  });
+}
+
+function openPeople() {
+  removeArmed = null;
+  closePersonForm();
+  renderPeople();
+  showScreen("screen-people");
+}
+
+function openPersonForm(index = null) {
+  editingIndex = index;
+  const person = index === null ? { name: "", conditions: [], notes: "" } : loadPeople()[index];
+  byId("person-name").value = person.name;
+  byId("person-notes").value = person.notes || "";
+  byId("person-name").placeholder = CONTENT.myPeople.namePlaceholder;
+  byId("person-notes").placeholder = CONTENT.myPeople.notesPlaceholder;
+
+  const box = byId("person-conditions");
+  box.replaceChildren();
+  for (const condition of CONTENT.myPeople.conditions) {
+    const label = document.createElement("label");
+    label.className = "toggle";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = condition.id;
+    input.checked = person.conditions.includes(condition.id);
+    const text = document.createElement("span");
+    text.textContent = condition.label;
+    label.append(input, text);
+    box.append(label);
+  }
+  byId("person-error").hidden = true;
+  byId("person-form").hidden = false;
+  byId("btn-add-person").hidden = true;
+  byId("person-name").focus();
+}
+
+function closePersonForm() {
+  byId("person-form").hidden = true;
+  byId("btn-add-person").hidden = false;
+  editingIndex = null;
+}
+
+function savePerson(event) {
+  event.preventDefault();
+  const name = byId("person-name").value.trim();
+  if (!name) {
+    byId("person-error").textContent = CONTENT.myPeople.needName;
+    byId("person-error").hidden = false;
+    byId("person-name").focus();
+    return;
+  }
+  const conditions = [...byId("person-conditions").querySelectorAll("input:checked")].map((i) => i.value);
+  const person = { name: name, conditions: conditions, notes: byId("person-notes").value.trim() };
+
+  const people = loadPeople();
+  if (editingIndex === null) people.push(person);
+  else people[editingIndex] = person;
+  savePeople(people);
+  closePersonForm();
+  renderPeople();
+  renderPicker(); // their situations move to the top of "What's happening?"
+}
+
+function removePerson(index) {
+  if (removeArmed !== index) {   // first tap: ask again
+    removeArmed = index;
+    renderPeople();
+    return;
+  }
+  const people = loadPeople();
+  people.splice(index, 1);       // remove 1 item at that position (like del list[i] in Python)
+  savePeople(people);
+  removeArmed = null;
+  renderPeople();
+  renderPicker();
+}
+
+// Picking "Seizure for Dad": log who it is (a snapshot of their saved info,
+// so the handoff stays right even if the info is edited later), then open
+// that situation as usual.
+function choosePerson(person, scenarioId) {
+  const labels = conditionLabels(person);
+  logEvent(`${CONTENT.myPeople.logPerson} ${person.name} (${labels.join(", ")})`, {
+    kind: "person",
+    personName: person.name,
+    conditionLabels: labels,
+    notes: person.notes || "",
+  });
+  chooseScenario(scenarioId);
+}
+
+// ============================================================
+// 27. START-UP: connect buttons to functions
 // ============================================================
 function init() {
+  loadSettings();
   fillContent();
   byId("note-text").placeholder = CONTENT.notePlaceholder;
   byId("cpr-hands-image").src = HANDS_IMAGE.src;
   byId("cpr-hands-image").alt = HANDS_IMAGE.alt;
   renderPicker();
   renderAbout();
+  applySettings();
+  refreshHowToButton();
   registerOffline();
   updateClock();
   refreshCprControls();
@@ -1898,6 +2248,22 @@ function init() {
 
   byId("btn-cpr-start").addEventListener("click", () => startCpr());
   byId("btn-about").addEventListener("click", openAbout);
+  byId("btn-howto").addEventListener("click", openTutorial);
+  byId("btn-about-howto").addEventListener("click", openTutorial);
+  byId("btn-tutorial-next").addEventListener("click", tutorialNext);
+  byId("btn-tutorial-back").addEventListener("click", () => { tutorialIndex--; renderTutorial(); });
+  byId("btn-tutorial-skip").addEventListener("click", finishTutorial);
+  byId("btn-people").addEventListener("click", openPeople);
+  byId("btn-add-person").addEventListener("click", () => openPersonForm());
+  byId("btn-person-cancel").addEventListener("click", closePersonForm);
+  byId("person-form").addEventListener("submit", savePerson);
+  byId("btn-settings").addEventListener("click", openSettings);
+  byId("set-calm").addEventListener("change", (e) => changeSettings({ calm: e.target.checked }));
+  byId("set-sound").addEventListener("change", (e) => changeSettings({ sound: e.target.checked }));
+  byId("set-read").addEventListener("change", (e) => changeSettings({ readAloud: e.target.checked }));
+  document.querySelectorAll(".js-back-home").forEach((button) => {
+    button.addEventListener("click", () => showScreen("screen-home"));
+  });
   byId("btn-reset").addEventListener("click", openResetConfirm);
   byId("btn-reset-time").addEventListener("click", resetTime);
   byId("btn-reset-cancel").addEventListener("click", closeResetConfirm);
