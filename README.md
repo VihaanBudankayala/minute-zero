@@ -23,7 +23,7 @@
 - **More ways to reach 911:** Text-to-911 with the message written for you (where available) and your GPS location to read to the dispatcher.
 - **My people:** save conditions you or your family have been diagnosed with (epilepsy, diabetes, severe allergy, heart disease, past stroke, opioid pain medicine) plus notes. Their situations move to the top ("Seizure for Dad"), and choosing one shows their info on the paramedic handoff. Saved only on the phone; it's what you entered, never a diagnosis by the app.
 - **Settings and presets:** text size, Calm (no pulsing), CPR sound and read-aloud defaults; presets Standard, Large text, Calm and Hands-free.
-- **Tutorial:** a 30-second, 5-card "how it works" from the home screen. It never opens by itself, so it can't delay someone in a real emergency.
+- **Tutorial:** a 30-second, 5-card "how it works" from the ☰ menu, each card with a screenshot and arrows pointing at the button to tap. It never opens by itself, so it can't delay someone in a real emergency.
 - **Built for stress:** large buttons, high-contrast colors checked with the WCAG formula, optional "read steps aloud," the screen stays on, and the log survives a reload.
 
 ## Run it
@@ -36,6 +36,7 @@
 - `content.js`: **all medical text**, as data. Every step has a `source` field; anything not yet confirmed word-for-word is marked `// VERIFY`.
 - `app.js`: the logic. The **timeline is the single source of truth**: the screen, the handoff and the copied text are all built from it.
 - `styles.css`: mobile-first design with color tokens.
+- `tools/make-tutorial-pictures.mjs`: an optional helper (not part of the app) that takes the tutorial screenshots and draws the arrows.
 - `sw.js`: the **service worker** that saves every file on the phone for offline use.
 - Technical highlights (details in `DEVLOG.md`):
   - **Web Audio look-ahead scheduler** for a CPR beat that doesn't drift (measured: 0.5455 s between every beat, exactly 60 ÷ 110).

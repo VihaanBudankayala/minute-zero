@@ -135,7 +135,9 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
-## Sun Oct 25 (newest): ☰ button (#btn-menu) at the top right of top-bar row 1, BEFORE START only (during an
+## Sun Oct 25 (newest): tutorial cards have pictures = real app screenshots with arrows (images/tutorial-*.webp,
+## made by tools/make-tutorial-pictures.mjs; NOT medical images). Next must stay visible at 360×640. ?v=9, CACHE v9.
+## Sun Oct 25: ☰ button (#btn-menu) at the top right of top-bar row 1, BEFORE START only (during an
 ## emergency Reset time / Start over sit there). Opens <dialog id="side-menu"> sliding in from the right:
 ## How to use / My people / Settings / About. Closes on ✕, Esc, a tap beside it, or choosing an item. ?v=8, CACHE v8.
 

@@ -2005,6 +2005,8 @@ function renderTutorial() {
   const card = T.cards[tutorialIndex];
   const last = tutorialIndex === T.cards.length - 1;
   byId("tutorial-counter").textContent = `${tutorialIndex + 1} ${CONTENT.ofLabel} ${T.cards.length}`;
+  byId("tutorial-image").src = card.image.src;
+  byId("tutorial-image").alt = card.image.alt;
   byId("tutorial-title").textContent = card.title;
   byId("tutorial-text").textContent = card.text;
   byId("btn-tutorial-next").textContent = last ? T.done : T.next;

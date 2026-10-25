@@ -725,3 +725,30 @@ turns off pulsing like the phone's "Reduce motion". Presets are just bundles of 
 `content.js`; the preset whose values all match the current settings is shown as selected.
 Settings, people and the tutorial flag are saved separately from the emergency log, so
 "Start over" keeps them, and "Delete everything saved on this phone" (About) removes all of it.
+
+## Tutorial pictures with arrows, and the Next button that fell off the screen
+**What we built:** each of the 5 tutorial cards now shows a real screenshot of Minute Zero with
+amber arrows and a ring around the button the card talks about. The pictures are made by a
+script (`tools/make-tutorial-pictures.mjs`) that drives the app with Playwright, the same browser
+automation we use for testing. It draws the arrows as an SVG layer on top of the page, dims
+everything except the highlighted buttons (an SVG *mask* with holes cut where the buttons are),
+and takes a 375×300 screenshot at 2× resolution (750×600). They're not medical pictures, so the
+"student draws every medical illustration" rule doesn't apply; they're screenshots of our own app.
+
+**Problem 1 (real): the first arrows ran straight through the text.** On the first try the arrows
+crossed "Minute Zero" and the hint sentences, and one arrow started outside the cropped picture.
+Fix: dim everything except the targets so the arrows are always the brightest thing, shorten the
+arrows, and choose each arrow's direction so its tail lands in an empty area inside the crop.
+
+**Problem 2 (real): adding a picture pushed the Next button below the screen.** On a 375×667 phone
+the Next button ended at 776 px, so every card needed scrolling. Our first test said only card 1
+failed, but that was wrong: Playwright scrolls the page before it clicks, so the later cards were
+measured while scrolled. Lesson: scroll back to the top before measuring.
+Fix: "1 of 5" and Skip share one row, Back and Next share one row, the picture's height is
+`25vh` (a quarter of the screen height, at least 150 px), and cards 3 and 4 got shorter wording.
+Now Next is fully visible on every card at 360×640, 375×667 and 390×844.
+
+**Problem 3 (real, in the script): `URL` before initialization.** The script had
+`const URL = new URL(...)`. Declaring our own `URL` hides JavaScript's built-in `URL` for the
+whole file, so `new URL` failed. (Like naming a Python variable `str` and then calling `str()`.)
+Renamed it `PAGE`.

@@ -975,15 +975,30 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 .btn-howto.is-new { border-style: dashed; border-color: var(--warn); color: var(--warn); }
 
 /* Tutorial */
+.tutorial-heading { margin: 0; }
+.tutorial-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: -8px; }
+.tutorial-top .btn-small { align-self: center; }
 .tutorial-card {
-  padding: 18px;
+  gap: 10px;
+  padding: 12px;
   border: 2px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  min-height: 12rem;
 }
-.tutorial-card h3 { margin: 0; font-size: 1.4rem; }
-.tutorial-card p { margin: 0; font-size: 1.2rem; }
+.tutorial-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 25vh;              /* shorter on short phones, so Next stays on screen */
+  max-height: 260px;
+  min-height: 150px;
+  margin: 0 auto;
+  aspect-ratio: 750 / 600;   /* keeps the 5:4 shape */
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+.tutorial-card h3 { margin: 0; font-size: 1.25rem; }
+.tutorial-card p { margin: 0; font-size: 1.1rem; }
 
 /* My people */
 .people-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }

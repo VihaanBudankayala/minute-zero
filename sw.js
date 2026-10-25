@@ -16,7 +16,7 @@
  * When you change any file, change CACHE_VERSION (v1 -> v2) so phones throw
  * away the old saved copy and save the new files.
  */
-const CACHE_VERSION = "minutezero-v8";
+const CACHE_VERSION = "minutezero-v9";
 
 // Every file the app needs to work offline.
 const FILES = [
@@ -39,6 +39,11 @@ const FILES = [
   "images/tourniquet.webp",
   "images/vision-changes.webp",
   "images/wound-packing.webp",
+  "images/tutorial-call911.webp",
+  "images/tutorial-start.webp",
+  "images/tutorial-pick.webp",
+  "images/tutorial-log.webp",
+  "images/tutorial-handoff.webp",
 ];
 
 // 1) Install: save every file. If one is missing, installing fails (on purpose),
