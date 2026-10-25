@@ -68,10 +68,17 @@ below were rewritten to fix that.)
    OUTER side of the thigh: the side of the leg facing the viewer, on the side seam of the pants, halfway
    between hip and knee. The pen is at a right angle to the side of the leg, held in a closed fist, with no
    thumb over either end. No arrows.
-10. An adult lies on their back. A helper kneels beside them, supports the back of the person's neck so the
-    head tilts back, and holds a small nasal spray device: a short plastic nozzle with two finger rests and a
-    plunger underneath, like a nasal allergy spray. NOT a syringe, no needle. The nozzle tip is in one
-    nostril, thumb on the plunger. No arrows.
+10. (Third version: the first two came out as a syringe. Avoid the word "plunger", it makes the model draw one.)
+    Draw a naloxone nasal spray being given to a person who overdosed. The person lies on their back on the
+    floor, eyes closed. A helper kneels beside their head, one hand under the back of the person's neck so
+    the head tilts back. With the other hand the helper holds a small naloxone nasal spray: a short white
+    plastic device about the size of a thumb, shaped like a nasal allergy spray bottle, with a rounded nozzle
+    on top. The helper's index and middle fingers are on either side of the nozzle, the thumb pushes on the
+    flat bottom, and the nozzle is gently inside one nostril. This is NOT a syringe: no needle, no long thin
+    barrel, no liquid tube. No arrows, no text.
+    If it still draws a syringe, first ask: "Draw only a naloxone nasal spray device on a white background,
+    held in a hand, fingers on either side of the nozzle, thumb on the bottom." Then: "Now show that exact
+    device being used in the scene above."
 11. An adult with diabetes is awake and sitting up, holding a glass of orange juice and a small open
     container of glucose tablets. A helper sits beside them.
 
@@ -82,7 +89,7 @@ below were rewritten to fix that.)
   7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`, 11 `give-sugar.webp`.
 - 9 `auto-injector.webp`: first try rejected (top of the thigh, safety cap still on); second try used
   (cap off, outer front of the mid-thigh; marked VERIFY in content.js).
-- 10 naloxone: rejected TWICE (drawn as a syringe both times). Not used: no picture is better than the wrong device.
+- 10 naloxone: rejected TWICE (drawn as a syringe both times); prompt rewritten a third time (Oct 25).
 
 ## What Claude checks before a picture goes in
 - Matches the step text exactly (e.g. fist **above the belly button**, injector on the **outer thigh**,
