@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#161616">
   <title>Minute Zero</title>
-  <!-- "?v=15": bump this number (and CACHE_VERSION in sw.js) after every change,
+  <!-- "?v=16": bump this number (and CACHE_VERSION in sw.js) after every change,
        so browsers fetch the new file instead of an old saved one. -->
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
   <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -606,9 +606,12 @@
          there's less to scroll past during an emergency. -->
     <section id="log-panel" class="log-panel stack" hidden aria-labelledby="log-heading">
       <h3 id="log-heading" class="visually-hidden" data-content="timelineHeading"></h3>
-      <button class="btn btn-handoff js-open-handoff" type="button" data-content="handoff.openButton"></button>
-      <!-- Location (and the other ways to reach 911) from any screen. -->
-      <button class="btn js-open-911help" type="button" data-content="help911.openLink"></button>
+      <!-- Handoff + location side by side (less scrolling). -->
+      <div class="row log-top">
+        <button class="btn btn-handoff js-open-handoff" type="button" data-content="handoff.openButton"></button>
+        <!-- Location (and the other ways to reach 911) from any screen. -->
+        <button class="btn js-open-911help" type="button" data-content="help911.openLink"></button>
+      </div>
 
       <div class="row">
         <button id="btn-add-note" class="btn" type="button" data-content="addNote"></button>
@@ -635,7 +638,7 @@
 
   <!-- Order matters: content.js defines CONTENT, then app.js uses it.
        Scripts go at the end of <body> so the HTML above already exists. -->
-  <script src="content.js?v=15"></script>
-  <script src="app.js?v=15"></script>
+  <script src="content.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>

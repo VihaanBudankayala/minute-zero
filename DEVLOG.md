@@ -797,3 +797,12 @@ requested twice. A flag (`autoLocating`) plus a re-check after waiting keeps it 
 1 log entry). This is a classic "race condition", like two Java threads updating the same variable.
 **Tested with Playwright** (it can fake GPS and permissions): allowed → found at START with 1 request; never asked →
 0 requests at START, asks at Text 911; switch off → never asks; blocked → Settings explains how to allow it.
+
+## Less scrolling on phones (Update 10)
+We measured every screen's page height on a 375×667 phone with a Playwright script (`scrollmap.mjs`) before changing
+anything. The CPR screen was 3.0 screens tall, "What's happening?" 2.6. The biggest causes: the "Person collapsed
+at" box switched back to its full size (with a 3-line hint) after START CPR, and the bottom block (Handoff, Location,
+Add note / Undo, event log) was 324 px under every emergency screen. Fixes: the compact one-row time box stays
+compact after START; Handoff and Location sit side by side; tighter gaps; and the 911 card's location link hides
+once the location was found automatically. Results: CPR 3.0 → 2.5 screens, "What's happening?" 2.6 → 2.3,
+mode question 1.5 → 1.3, steps 1.9 → 1.8. START CPR, the AED row and Done still fit on 360×640.

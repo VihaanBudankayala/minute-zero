@@ -417,7 +417,7 @@ const CONTENT = {
   // Not medical content. Source for Text-to-911: FCC consumer guide.
   help911: {
     openLink: "Find my location for 911", // opens the 911 help screen (location + text + call)
-    foundButton: "📍 Your location for 911:",  // + coordinates, once found
+    foundButton: "📍 For 911:",  // + coordinates, once found (half-width button)
     shortLink: "text 911",
     heading: "More ways to reach 911",
     callTitle: "Call if you can",

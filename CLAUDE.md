@@ -60,6 +60,9 @@
   heart.org, stroke.org, redcross.org or stopthebleed.org directly). Steps marked `// VERIFY` need the student's check.
 - The app always tells the user to **follow the 911 dispatcher's instructions** when they're given.
 
+## Update 10 — Less scrolling (?v=16, CACHE v16): compact time box on the CPR screen after START too; log panel
+## Handoff + Location side by side (.log-top), tighter gaps; 911-card location link hidden once location is found.
+## Measure with scratchpad scrollmap.mjs (page height per screen at 375×667).
 ## Update 9 — Automatic location for 911: ✅ BUILT, option (C) chosen. ?v=15, CACHE v15. app.js section 27.
 ## settings.autoLocation (default ON). START: silent only if permission is "granted" (Permissions API, no popup).
 ## Call/Text 911: may ask. Settings switch + tutorial card 6 ("Allow location now") ask in calm time.

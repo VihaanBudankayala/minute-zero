@@ -330,7 +330,8 @@ function refreshStatus911() {
   // On a computer, say plainly that it can't call 911 (tel: just opens an app).
   byId("status-911-fallback-text").textContent =
     isComputer() ? CONTENT.status911.computer : CONTENT.status911.didntOpen;
-  byId("status-911-textlink").hidden = called || state.mode !== null;
+  // "Find my location for 911" link: not needed once the location was found automatically.
+  byId("status-911-textlink").hidden = called || state.mode !== null || savedLocation() !== null;
   document.querySelectorAll(".js-call911").forEach((link) => {
     link.classList.toggle("is-called", called);
   });
@@ -956,13 +957,14 @@ function placeTimeBox() {
   }
 
   box.hidden = slot === null;
-  // Before START CPR, the box is "compact" (one row, no hint) so the
-  // START button still fits on the screen.
-  const compact = slot === "cpr-pre-time-slot";
+  // On the CPR screen the box is "compact" (one row, no hint): before START CPR
+  // so the START button still fits, and after it so there's less to scroll.
+  const compact = slot === "cpr-pre-time-slot" || slot === "cpr-time-slot";
   box.classList.toggle("is-compact", compact);
   if (slot) {
     byId(slot).append(box);
-    byId("time-label").textContent = compact ? `${config.label} ${CONTENT.cpr.optional}` : config.label;
+    const optional = slot === "cpr-pre-time-slot" ? ` ${CONTENT.cpr.optional}` : "";
+    byId("time-label").textContent = compact ? `${config.label}${optional}` : config.label;
     byId("btn-time-save").textContent = compact ? CONTENT.timeBox.saveShort : CONTENT.timeBox.save;
     byId("time-hint").textContent = config.hint;
     refreshTimeSaved();

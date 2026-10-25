@@ -1160,3 +1160,14 @@ html.text-xlarge { font-size: 125%; }
   .ring { display: none; }
   .btn-call::after { opacity: 0.6; }
 }
+
+/* ---------- Less scrolling on phones (Update 10) ----------
+   Same buttons and text, less empty space. Buttons never go below 56px. */
+.log-panel { padding-top: 14px; gap: 10px; }
+.log-panel .btn { padding-block: 8px; }
+#scenario-list { gap: 10px; }
+.scenario-btn.is-urgent { padding-block: 10px; }
+.scenario-btn.is-other { min-height: 60px; padding-block: 8px; }
+#btn-sound, #btn-trained { padding: 8px 10px; font-size: 1rem; }
+#cpr-running { gap: 10px; }
+.log-top .btn { font-size: 1.05rem; padding: 8px 10px; line-height: 1.25; }
