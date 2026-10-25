@@ -6,14 +6,17 @@
  * (caches) every file the app needs. After that, the app opens even with no
  * signal: in a basement, a stairwell, or a rural area.
  *
- * Strategy: "cache first, update in the background". In an emergency we never
- * want to wait for the network, so we answer from the saved copy right away
- * and quietly fetch a fresh copy for next time.
+ * Strategy: "network first, saved copy as backup". Each request tries the
+ * internet first, so a new version shows up on the very next load. If there's
+ * no answer within 3 seconds, or the phone is offline, the saved copy is used
+ * instead, so the app still opens in a basement or a dead zone.
+ * (Our first version was "cache first": fast, but phones kept showing the OLD
+ * version after an update until a second reload. See DEVLOG.)
  *
  * When you change any file, change CACHE_VERSION (v1 -> v2) so phones throw
  * away the old saved copy and save the new files.
  */
-const CACHE_VERSION = "minutezero-v3";
+const CACHE_VERSION = "minutezero-v4";
 
 // Every file the app needs to work offline.
 const FILES = [
@@ -57,27 +60,34 @@ self.addEventListener("activate", (event) => {
   self.clients.claim(); // control pages that are already open
 });
 
-// 3) Fetch: answer from the saved copy first; update it in the background.
+// 3) Fetch: try the network first (with a 3-second limit); fall back to the saved copy.
+const NETWORK_TIMEOUT_MS = 3000;
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  // Only handle normal page loads from our own site (not tel:, sms:, or other sites).
+  // Only handle normal loads from our own site (not tel:, sms:, or other sites).
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
 
   event.respondWith(
     caches.open(CACHE_VERSION).then(async (cache) => {
-      const saved = await cache.match(request, { ignoreSearch: true });
-      const fresh = fetch(request)
+      // A promise that gives up after 3 seconds (a weak signal shouldn't make people wait).
+      const timeout = new Promise((resolve) => setTimeout(() => resolve(null), NETWORK_TIMEOUT_MS));
+      const network = fetch(request)
         .then((response) => {
-          if (response.ok) cache.put(request, response.clone());
+          if (response.ok) cache.put(request, response.clone()); // keep the saved copy fresh
           return response;
         })
-        .catch(() => null); // offline: no fresh copy, that's fine
+        .catch(() => null); // offline
 
-      if (saved) return saved;              // fast path: saved copy
-      const response = await fresh;         // not saved yet: try the network
+      // Promise.race = whichever finishes first: the network answer or the 3-second limit.
+      const response = await Promise.race([network, timeout]);
       if (response) return response;
-      // Offline and never saved (e.g. an unusual URL): fall back to the app's page.
-      return cache.match("index.html");
+
+      const saved = await cache.match(request, { ignoreSearch: true });
+      if (saved) return saved;
+      // Not saved (unusual URL) and no network: wait for the network a bit longer,
+      // then fall back to the app's page.
+      return (await network) || cache.match("index.html");
     })
   );
 });

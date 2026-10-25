@@ -641,3 +641,22 @@ as one slim line, so it's on the first screen of every phone. **A gap we found:*
 card's location link meant there was no way to reach "Find my location" mid-emergency, so it
 became a button in the event-log area, available on every screen.
 Cache version: v3.
+
+---
+
+## Bug (real): phones kept showing the old version after an update
+
+**Report:** after turning on GitHub Pages, the student didn't see the new Reset and Text 911
+buttons, even though GitHub had them (we checked: GitHub's `main` matched our latest commit and
+its `index.html` contained both buttons).
+**Cause:** our service worker was "cache first": it always answered from the copy saved on the
+phone and only fetched updates in the background. Fast in an emergency, but a phone that had
+opened the app before kept showing the OLD version until a second reload.
+**Fix:** "network first, saved copy as backup." Each request tries the internet, but gives up
+after 3 seconds (`Promise.race` between the network and a timer) and uses the saved copy, which
+also happens right away when the phone is offline.
+**Test:** on a local server we loaded the app, then "deployed" an update by changing the page
+title on the server. One reload showed the new title. Then we switched offline and reloaded: the
+app opened in 29 ms from the saved copy, with pictures. Cache version v4.
+**Lesson:** every caching choice is a trade-off between speed and freshness. For an app that's
+still being updated, stale content is a real bug, not just an inconvenience.
