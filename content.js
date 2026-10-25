@@ -495,7 +495,7 @@ const CONTENT = {
     // TODO (student): when your own drawings replace these, change this to
     // "Illustrations drawn by <your name>."
     // TODO (student): say where the CPR and pressure pictures came from (see CLAUDE.md, Images).
-    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
+    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for the AED and firm-surface steps, choking, low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
     madeFor: "Made for the 2026 Congressional App Challenge.",
     sourcesTitle: "Official sources",
     sourcesIntro:
@@ -647,12 +647,14 @@ const CONTENT = {
         {
           // VERIFY: "send someone" wording against Part 7.
           text: "Send someone to get an AED, if one is nearby.",
+          image: { src: "images/aed-fetch.webp", alt: "A rescuer kneels beside a person lying on the floor and points while calling out. Another person runs to a wall cabinet that holds an AED (a heart with a lightning bolt)." },
           log: "Someone sent for an AED",
           source: "AHA Hands-Only CPR (heart.org); 2025 AHA CPR & ECC Guidelines, Part 7",
         },
         {
           // VERIFY: "on their back" is not in the summaries we checked.
           text: "Lay the person on their back on a firm, flat surface.",
+          image: { src: "images/lay-on-back.webp", alt: "A person lies on their back on a hard floor. A rescuer kneels at their side with both hands on the center of the chest." },
           log: "Person on a firm, flat surface",
           source: "2025 AHA CPR & ECC Guidelines, Part 7",
         },
@@ -716,6 +718,7 @@ const CONTENT = {
         {
           // VERIFY: "let them keep coughing" wording for a mild blockage.
           text: "Ask, \"Are you choking?\" If they can cough or talk, let them keep coughing.",
+          image: { src: "images/choking-sign.webp", alt: "A man holds both hands at his throat and looks scared. Another man leans toward him, concerned." },
           log: "Asked if choking",
           source: "2025 AHA CPR & ECC Guidelines, Part 7",
         },
@@ -727,6 +730,7 @@ const CONTENT = {
         {
           // VERIFY: hand position and technique wording.
           text: "Give 5 firm back blows between the shoulder blades with the heel of your hand.",
+          image: { src: "images/back-blows.webp", alt: "A choking man bends forward. The rescuer supports his chest with one hand and raises the other hand to strike between his shoulder blades." },
           log: "Back blows given",
           source: "2025 AHA CPR & ECC Guidelines, Part 7",
         },
@@ -734,6 +738,7 @@ const CONTENT = {
           // VERIFY: technique wording. Pregnant person or can't reach around: check the guideline
           // (secondary sources say chest thrusts instead); not included until verified.
           text: "Give 5 abdominal thrusts: stand behind them, put a fist just above the belly button, and pull in and up quickly.",
+          image: { src: "images/abdominal-thrusts.webp", alt: "A rescuer stands behind a choking man, arms around his waist, with a fist just above his belly button and the other hand holding the fist. Small arrows show pulling in." },
           log: "Abdominal thrusts given",
           source: "2025 AHA CPR & ECC Guidelines, Part 7",
         },
@@ -1008,6 +1013,7 @@ const CONTENT = {
         },
         {
           text: "Help them to the ground if you can. Move hard or sharp things away from them.",
+          image: { src: "images/seizure-clear-area.webp", alt: "A man lies on the floor having a seizure. A helper kneels beside him and moves a chair and table away." },
           log: "Helped to the ground, area cleared",
           source: "2024 AHA & American Red Cross First Aid Guidelines; American Red Cross",
         },

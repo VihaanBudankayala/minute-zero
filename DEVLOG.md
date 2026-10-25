@@ -761,3 +761,7 @@ had a caption band with text the AI wrote itself; it was cropped off, because me
 sources in `content.js`. Two were rejected: the naloxone picture showed a **syringe** instead of a nasal spray,
 and the auto-injector picture showed the pen on the top of the thigh with its safety cap still on.
 Lesson: AI pictures look convincing, so every one is checked against the step text before it goes in.
+Second batch: all 6 were usable after cropping the captions. One fix: the back-blows picture had an arrow
+pointing *away* from the person's back (it showed the wind-up, not the blow), which could teach the wrong
+direction. We found the arrow's dark pixels inside a small box, grew that mask a little, and filled it in
+with OpenCV inpainting (the same method used on the tourniquet picture). 9 of the 11 planned pictures are in.

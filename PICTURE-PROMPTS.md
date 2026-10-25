@@ -76,8 +76,10 @@ below were rewritten to fix that.)
     container of glucose tablets. A helper sits beside them.
 
 ## Status (Oct 25)
-- Used (caption band cropped off): 7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`,
-  11 `give-sugar.webp`.
+- Used (caption band cropped off): 1 `aed-fetch.webp`, 2 `lay-on-back.webp`, 3 `choking-sign.webp`,
+  4 `back-blows.webp` (an arrow pointing AWAY from the back was removed with OpenCV inpainting),
+  5 `abdominal-thrusts.webp` (small "in" arrows kept), 6 `seizure-clear-area.webp`,
+  7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`, 11 `give-sugar.webp`.
 - Rejected: 9 (pen pressed on the TOP of the thigh, with the blue safety cap still on the top end) and
   10 (drawn as a SYRINGE, not a nasal spray). Prompts 9 and 10 above were rewritten.
 
