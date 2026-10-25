@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<rect width="800" height="600" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#c8102e"/></marker></defs>
+<g stroke="#1d1d1f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+<g transform="translate(-130 0)">
+<circle cx="400" cy="300" r="200" fill="#f3d6bf"/>
+<path d="M215,250 Q230,105 400,100 Q570,105 585,250 Q560,150 400,145 Q240,150 215,250 Z" fill="#5b4636"/>
+<ellipse cx="480" cy="270" rx="26" ry="18" fill="#ffffff"/><circle cx="480" cy="272" r="9" fill="#1d1d1f" stroke="none"/>
+<path d="M400,300 L385,350 L410,352" fill="none" stroke-width="5"/>
+<path d="M320,395 Q400,450 480,395" fill="none" stroke-width="8"/>
+<path d="M245,210 Q240,330 330,345 Q395,340 380,250 Q360,190 290,195 Z" fill="#e8bf9f"/>
+<line x1="300" y1="210" x2="305" y2="320" stroke-width="4"/>
+<line x1="330" y1="205" x2="338" y2="330" stroke-width="4"/>
+<line x1="358" y1="215" x2="362" y2="320" stroke-width="4"/>
+</g>
+<g transform="translate(630 300)">
+<path d="M-90,0 Q0,-60 90,0 Q0,60 -90,0 Z" fill="#ffffff" stroke="#1d1d1f"/>
+<circle cx="0" cy="0" r="18" fill="#1d1d1f" stroke="none"/>
+<path d="M-70,25 Q20,-35 110,25 Q20,85 -70,25 Z" fill="none" stroke="#c8102e" stroke-width="5" stroke-dasharray="10 8"/>
+</g>
+<text x="630" y="420" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="30" text-anchor="middle" fill="#c8102e" stroke="none">Blurry or double?</text>
+
+</g></svg>

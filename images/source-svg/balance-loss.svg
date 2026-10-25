@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<rect width="800" height="600" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#c8102e"/></marker></defs>
+<g stroke="#1d1d1f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+<line x1="40" y1="560" x2="640" y2="560" stroke="#bfb6ad" stroke-width="8"/>
+<rect x="640" y="30" width="130" height="540" fill="#e2dad2"/>
+<line x1="640" y1="130" x2="770" y2="130" stroke="#bdb3a9" stroke-width="4"/>
+<line x1="640" y1="230" x2="770" y2="230" stroke="#bdb3a9" stroke-width="4"/>
+<line x1="640" y1="330" x2="770" y2="330" stroke="#bdb3a9" stroke-width="4"/>
+<line x1="640" y1="430" x2="770" y2="430" stroke="#bdb3a9" stroke-width="4"/>
+<g transform="rotate(14 400 560)">
+<line x1="380" y1="390" x2="330" y2="555" stroke="#1d1d1f" stroke-width="54"/><line x1="380" y1="390" x2="330" y2="555" stroke="#4b5563" stroke-width="44"/>
+<line x1="420" y1="390" x2="470" y2="555" stroke="#1d1d1f" stroke-width="54"/><line x1="420" y1="390" x2="470" y2="555" stroke="#4b5563" stroke-width="44"/>
+<line x1="365" y1="230" x2="290" y2="360" stroke="#1d1d1f" stroke-width="46"/><line x1="365" y1="230" x2="290" y2="360" stroke="#f3d6bf" stroke-width="36"/>
+<rect x="340" y="200" width="120" height="210" rx="45" fill="#e8a33d"/>
+<circle cx="400" cy="140" r="52" fill="#f3d6bf"/>
+</g>
+<line x1="500" y1="250" x2="632" y2="250" stroke="#1d1d1f" stroke-width="46"/><line x1="500" y1="250" x2="632" y2="250" stroke="#f3d6bf" stroke-width="36"/>
+<path d="M210,110 q-25,30 0,60" fill="none" stroke="#c8102e" stroke-width="8"/>
+<path d="M180,95 q-35,45 0,90" fill="none" stroke="#c8102e" stroke-width="8"/>
+<path d="M150,80 q-45,60 0,120" fill="none" stroke="#c8102e" stroke-width="8"/>
+
+</g></svg>

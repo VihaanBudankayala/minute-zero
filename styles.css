@@ -1,0 +1,931 @@
+/*
+ * styles.css — Minute Zero
+ * Mobile-first: the base styles are for phones. Design goals:
+ *  - Big tap targets (at least 56px tall) for shaky hands and one-hand use.
+ *  - High contrast (white on a very dark red-black) so it's readable when stressed.
+ *  - Color is never the ONLY signal: every state also has text and/or an icon.
+ *  - Motion has meaning: things pulse only when they still need your attention.
+ *  - System fonts only: nothing to download, so text appears instantly even
+ *    with a weak signal (and works offline later).
+ */
+
+/* ---------- Design tokens (change colors/sizes in one place) ---------- */
+/* Layout idea: one big beating button on home; a sticky top bar with clock + 911. */
+:root {
+  color-scheme: dark;    /* tells the browser our page is dark, so built-in controls match */
+
+  /* Clear but not harsh: checked with the WCAG contrast formula (see DEVLOG).
+     Numbers are contrast ratios; 4.5 is the minimum for normal text, 3 for
+     button outlines, 7 is the stricter "AAA" level. Pure white on pure black
+     (21) was too harsh: bright text can seem to glow or blur on black. */
+  --bg: #161616;          /* very dark gray, softer than pure black */
+  --surface: #242424;     /* cards and secondary buttons */
+  --border: #7a7a7a;      /* button outlines: 4.2 on the background (minimum 3) */
+  --text: #ececec;        /* off-white: 15.3 on the background */
+  --muted: #bdbdbd;       /* secondary text: 9.6 */
+  --signal: #c8102e;      /* emergency red: white text on it = 5.9 (was 4.2, too low) */
+  --signal-bright: #d01c2c; /* lightest red used under white text (5.4) */
+  --signal-deep: #8a0b1f; /* darker red for edges */
+  --on-signal: #ffffff;   /* text on red */
+  --glow: rgba(200, 16, 46, 0.5); /* red glow around the big buttons */
+  --warn: #f5c542;        /* amber = "still to do" + situation labels: 11.2 */
+  --ok: #4ade80;          /* green = "done": 10.4 with dark text */
+  --on-light: #161616;    /* dark text on amber/green */
+
+  --tap-min: 56px;       /* minimum button height */
+  --radius: 14px;
+
+  /* One heartbeat at 110 beats per minute = 60 s / 110 ≈ 0.545 s.
+     Every pulse animation in the app uses this, so they all beat together. */
+  --beat: calc(60s / 110);
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }   /* padding no longer makes boxes wider than set */
+
+html { -webkit-text-size-adjust: 100%; }  /* stop iOS from auto-resizing text */
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.2rem;    /* 19px: bigger than the usual 16px, for stressed eyes */
+  line-height: 1.45;
+}
+
+h1, h2, h3 { text-wrap: balance; line-height: 1.15; }
+h1, .app-name { font-size: 2rem; font-weight: 800; margin: 0; letter-spacing: -0.01em; line-height: 1.15; }
+h2 { font-size: 1.6rem; margin: 8px 0 16px; }
+h3 { font-size: 1.25rem; margin: 28px 0 8px; }
+
+.muted { color: var(--muted); }
+
+/* `hidden` must always win, even over display:flex rules below. */
+[hidden] { display: none !important; }
+
+/* ---------- Top bar (always visible) ---------- */
+.topbar {
+  position: sticky;        /* stays at the top while the page scrolls */
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  /* env(safe-area-inset-*) keeps content clear of the iPhone notch. */
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;        /* the 911 pulse ring must not widen the page */
+}
+
+.clock-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Small red dot that blinks like a "REC" light while the log is recording. */
+.rec-dot {
+  display: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--signal);
+  animation: blink calc(var(--beat) * 2) steps(1) infinite;
+}
+.is-active .rec-dot { display: inline-block; }  /* body gets .is-active on START */
+
+.clock {
+  font-size: 2.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;  /* digits same width, so the clock doesn't jiggle */
+  line-height: 1.1;
+}
+
+/* ---------- Layout ---------- */
+main {
+  max-width: 40rem;   /* keeps lines readable on tablets/desktops */
+  margin: 0 auto;
+  padding: 20px 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+  overflow-x: clip;   /* growing rings never cause sideways scrolling */
+  /* Stack the status card, current screen and event log with even gaps.
+     `gap` skips hidden elements, so spacing stays right on every screen. */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* A vertical list of things with even spacing between them. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stack > h2, .stack > p { margin: 0; }
+h2.eyebrow { font-size: 1rem; line-height: 1.3; }  /* heading for screen readers, small label look */
+
+/* Side-by-side buttons (e.g. Save / Cancel). */
+.row { display: flex; gap: 12px; }
+.row > * { flex: 1; }
+
+.eyebrow {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--warn);       /* amber: 11.2 (red small text was only 4.6) */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.small { font-size: 1rem; }   /* the smallest text in the app is 16px */
+
+/* Hidden on screen but still read aloud by screen readers. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Home screen ---------- */
+.screen-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ecg {
+  width: 96px;
+  height: 20px;
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.tagline {
+  color: var(--muted);
+  margin: 8px 0 0;
+  max-width: 30ch;
+}
+
+/* The beating START button. */
+.start-wrap {
+  position: relative;          /* the rings are positioned relative to this box */
+  display: grid;
+  place-items: center;
+  width: min(68vw, 16rem);
+  aspect-ratio: 1;             /* always a perfect square, so the button is a circle */
+  margin: 44px 0 36px;
+}
+
+.btn-start {
+  position: relative;
+  z-index: 1;                  /* sits above the rings */
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid var(--signal-deep);
+  background: radial-gradient(circle at 50% 35%, var(--signal-bright), var(--signal) 60%, var(--signal-deep));
+  color: var(--on-signal);
+  box-shadow: 0 0 40px var(--glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;  /* removes the double-tap-zoom delay on phones */
+  animation: compress var(--beat) ease-out infinite;
+}
+
+.start-main {
+  font-size: clamp(2.2rem, 11vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.start-sub {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+/* Rings: each one starts the size of the button, grows, and fades out.
+   Each takes 2 beats; the second starts 1 beat later, so one ring leaves per beat. */
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--signal);
+  animation: ripple calc(var(--beat) * 2) ease-out infinite;
+}
+.ring-2 { animation-delay: var(--beat); }
+
+.start-hint { margin: 0 0 8px; font-weight: 600; max-width: 30ch; }
+
+.beat-note {
+  margin: 0 0 24px;
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 34ch;
+}
+
+/* ---------- Call 911 button (top bar) ---------- */
+.btn-call {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--tap-min);
+  padding: 12px 20px;
+  border-radius: 999px;        /* pill shape */
+  background: var(--signal);
+  color: var(--on-signal);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-decoration: none;       /* it's a link; remove the underline */
+  touch-action: manipulation;
+}
+
+.icon { width: 22px; height: 22px; fill: currentColor; }
+
+/* Pulsing outline that says "do this!" until 911 has been called. */
+.btn-call::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 3px solid var(--signal);
+  animation: ripple-small calc(var(--beat) * 2) ease-out infinite;
+}
+.btn-call.is-called::after { display: none; }  /* calm once 911 is called */
+
+/* Pressed feedback + keyboard focus for both main buttons. */
+.btn-start:active, .btn-call:active { transform: scale(0.96); }
+.btn-start:focus-visible, .btn-call:focus-visible {
+  outline: 4px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* ---------- Status card (911 called yet?) ---------- */
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-weight: 700;
+  color: var(--on-light);
+}
+.status-pending { background: var(--warn); }
+.status-done    { background: var(--ok); }
+
+.status-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  font-weight: 900;
+}
+
+.status-body { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+.status-tip { margin: 0; font-weight: 500; line-height: 1.35; }
+
+/* ---------- General buttons (picker, modes, log buttons) ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 14px 18px;
+  border: 2px solid var(--border);  /* visible outline: easy to see it's a button */
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible { outline: 4px solid var(--text); outline-offset: 3px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary { background: var(--signal); border-color: var(--signal); color: var(--on-signal); }
+.btn-tall { min-height: 84px; font-size: 1.2rem; }
+.btn-fit { width: auto; flex: none; }
+
+/* Quiet text-style button for less important actions (still 56px tall). */
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Scenario buttons: label on the left, arrow on the right. */
+.scenario-btn {
+  justify-content: space-between;
+  min-height: 80px;
+  font-size: 1.25rem;
+  text-align: left;
+}
+.chevron { font-size: 2rem; line-height: 1; color: var(--signal); }
+
+/* ---------- Dispatcher mode: big one-tap log buttons ---------- */
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* two equal columns */
+  gap: 12px;
+}
+/* If there's an odd number of buttons, the last one spans both columns. */
+.action-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+.log-btn {
+  flex-direction: column;
+  min-height: 104px;
+  gap: 6px;
+}
+.log-btn-label { font-size: 1.2rem; line-height: 1.2; }
+.log-btn-status { font-size: 1rem; font-weight: 700; color: var(--muted); }
+/* Logged buttons get a green border AND a "✓ Logged" line (not color alone). */
+.log-btn.is-logged { border-color: var(--ok); }
+.log-btn.is-logged .log-btn-status { color: var(--ok); }
+
+/* ---------- Time box ("Person collapsed at" / "Symptoms started at") ---------- */
+.time-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 2px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.time-box p { margin: 0; }
+.time-label { font-size: 1.2rem; font-weight: 800; }
+.time-row { display: flex; gap: 10px; }
+.time-saved { font-size: 1.3rem; font-weight: 800; color: var(--ok); }
+
+/* Text boxes: big text so they're easy to read and tap. */
+input, textarea {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+input[type="time"] { flex: 1; min-width: 0; font-size: 1.5rem; font-weight: 700; }
+input:focus-visible, textarea:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+
+/* ---------- Guided steps ---------- */
+.step-head { display: flex; flex-direction: column; gap: 2px; }
+.step-counter {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The drawing sits on a white card, so pencil/paint on white paper looks
+   intentional against the dark app. */
+.step-figure {
+  margin: 0;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: #ffffff;
+}
+.step-figure img {
+  display: block;
+  width: 100%;
+  height: auto;          /* keeps the 4:3 shape */
+  max-height: 32vh;      /* leaves room for the text and Done button on short phones */
+  object-fit: contain;   /* shrink to fit without stretching or cropping */
+  border-radius: 8px;
+}
+
+.step-text { font-size: 1.5rem; line-height: 1.25; }
+.finished-note {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 14px 16px;
+  border: 2px solid var(--ok);
+  border-radius: var(--radius);
+}
+
+/* The time-box "slots" don't draw a box of their own (display: contents),
+   so an empty slot doesn't add an extra gap in the column. */
+.slot { display: contents; }
+
+/* ---------- CPR screen ---------- */
+/* The beat circle. JavaScript squeezes it on every beat (see pulseCircle). */
+.beat-circle {
+  align-self: center;
+  width: min(50vw, 13rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 6px solid var(--signal-deep);
+  background: radial-gradient(circle at 50% 35%, var(--signal-bright), var(--signal) 60%, var(--signal-deep));
+  color: var(--on-signal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 0 40px var(--glow);
+}
+.beat-main { font-size: clamp(2rem, 10vw, 2.8rem); font-weight: 900; letter-spacing: 0.06em; line-height: 1; }
+.beat-sub { font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.beat-sub:empty { display: none; }
+
+/* Breaths time: amber circle with dark text (and different words, not just color). */
+.beat-circle.is-breaths {
+  background: var(--warn);
+  border-color: #b38600;
+  color: var(--on-light);
+  box-shadow: none;
+}
+.beat-circle.is-breaths .beat-main { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+
+.cpr-instruction {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* 2-minute countdown */
+.cpr-timer { display: flex; flex-direction: column; gap: 8px; }
+.cpr-timer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.cpr-timer-value {
+  color: var(--text);
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.cpr-timer-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.cpr-timer-fill { height: 100%; width: 0; background: var(--warn); }
+
+/* The 2-minute alert: amber, big, impossible to miss. */
+.switch-alert {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--warn);
+  color: var(--on-light);
+}
+.switch-alert p { margin: 0; }
+.switch-title { font-size: 1.3rem; font-weight: 800; }
+.btn-on-light {
+  background: var(--on-light);
+  border-color: var(--on-light);
+  color: var(--on-signal);
+}
+
+/* "Trained" toggle when on: green border + check mark in the text. */
+.btn.is-on { border-color: var(--ok); color: var(--ok); }
+
+/* "Where to put your hands": the built-in <details> open/close box. */
+.hands-help {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.hands-help summary {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hands-help[open] summary { border-bottom: 1px solid var(--border); }
+.hands-help .step-figure { margin: 12px; }
+
+/* ---------- Yes / No / Not sure rows (check, B.E. F.A.S.T., helpers) ---------- */
+.answer-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* three equal columns */
+  gap: 10px;
+}
+.answer-row .btn { padding: 10px 8px; }
+
+/* "I'm not sure what's happening": dashed border so it reads as a different
+   kind of choice from the three situations above it. */
+.btn-unsure {
+  justify-content: flex-start;
+  min-height: 72px;
+  border-style: dashed;
+  color: var(--muted);
+  text-align: left;
+}
+
+/* "It's happening to me" on the home screen: clearly a button, but quieter
+   than START so it isn't tapped by mistake. */
+.btn-self {
+  width: auto;
+  padding-inline: 24px;
+  margin-bottom: 20px;
+  border-color: var(--signal);
+}
+
+/* ---------- "It's happening to me" screen ---------- */
+.self-heading { font-size: 2rem; }
+.btn-call-big {
+  min-height: 96px;
+  font-size: 1.6rem;
+  border-radius: var(--radius);
+}
+.btn-call-big .icon { width: 30px; height: 30px; }
+
+/* Short bullet lists of tips. */
+.tips {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.tips:empty { display: none; }
+
+/* ---------- "Who's here to help?" ---------- */
+.helpers-box {
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.helpers-question { margin: 0; font-weight: 800; }
+
+/* ---------- CPR screen, before START ---------- */
+/* START CPR: big, red, and "compressing" at the CPR beat, like the home
+   START button. Motion means "this still needs doing". */
+.btn-cpr-start {
+  min-height: 92px;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  background: var(--signal);
+  border-color: var(--signal-deep);
+  color: var(--on-signal);
+  box-shadow: 0 0 30px var(--glow);
+  animation: compress var(--beat) ease-out infinite;
+}
+
+/* Compact versions of the two boxes (only before START CPR). */
+.helpers-box.is-compact { padding: 10px 12px; gap: 8px; }
+.helpers-box.is-compact .tips { display: none; }     /* tips come back after START */
+.helpers-box.is-compact .answer-row .btn { min-height: var(--tap-min); font-size: 1.05rem; }
+
+/* Time box in one row: [time][Now][Save]. `display: contents` on the row
+   lets its input and Now button sit directly in this 3-column grid. */
+.time-box.is-compact {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.time-box.is-compact .time-label { grid-column: 1 / -1; font-size: 1.05rem; }
+.time-box.is-compact #time-hint { display: none; }
+.time-box.is-compact .time-row { display: contents; }
+.time-box.is-compact input[type="time"] { font-size: 1.2rem; }
+.time-box.is-compact #btn-time-save { width: auto; }
+.time-box.is-compact .time-saved { grid-column: 1 / -1; font-size: 1.05rem; }
+
+/* ---------- Paramedic handoff (Milestone 5) ---------- */
+/* Banner after "EMS arrived": amber border = "do this now". */
+.ems-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 2px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.ems-banner p { margin: 0; font-size: 1.2rem; font-weight: 800; }
+
+/* The handoff button at the top of the event log. */
+.btn-handoff { border-color: var(--warn); color: var(--warn); }
+
+/* On the handoff screen, hide the 911 card, banner and event log:
+   the handoff has its own copy of the timeline. */
+body.on-handoff #status-911,
+body.on-handoff #ems-banner,
+body.on-handoff #log-panel { display: none; }
+
+.handoff-title { font-size: 1.8rem; }
+.handoff-situation { display: flex; flex-direction: column; gap: 4px; }
+.handoff-big { margin: 0; font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+.handoff h3 { margin: 8px 0 0; }
+
+/* Key-time rows: label on top, then big time + "25 min ago". */
+.handoff-times { display: flex; flex-direction: column; gap: 10px; }
+.ht-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label label" "time ago";
+  align-items: baseline;
+  gap: 2px 12px;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.ht-label { grid-area: label; color: var(--muted); font-weight: 700; }
+.ht-time  { grid-area: time; font-size: 1.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ht-ago   { grid-area: ago; color: var(--warn); font-weight: 800; font-variant-numeric: tabular-nums; }
+.ht-row.is-important .ht-time { font-size: 1.9rem; }
+.ht-row.is-highlight { border-color: var(--warn); }  /* tourniquet: EMS must see it */
+
+.handoff-total { margin: 0; font-weight: 700; }
+.handoff-list { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; font-weight: 700; }
+
+.copy-status { margin: 0; font-weight: 700; color: var(--ok); }
+.copy-fallback { min-height: 10rem; font-size: 1rem; }
+
+/* Two columns when the phone is turned sideways (or on a tablet):
+   key facts on the left, timeline on the right. */
+.handoff-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.handoff-grid > * { min-width: 0; }
+@media (orientation: landscape) and (min-width: 600px) {
+  .handoff-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* "Show full screen to paramedic": only the handoff, bigger text. */
+body.handoff-full .topbar,
+body.handoff-full .btn-ghost,
+body.handoff-full .handoff-actions .row,
+body.handoff-full .copy-status,
+body.handoff-full .copy-fallback { display: none !important; }
+body.handoff-full main { max-width: 64rem; }
+body.handoff-full .handoff { font-size: 1.15em; }
+
+/* ---------- About & Sources (Milestone 6) ---------- */
+.about h3 { margin: 10px 0 0; }
+.source-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.source-list p { margin: 4px 0 0; font-size: 1rem; }
+.source-list a, .about a {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;   /* long titles wrap instead of widening the page */
+}
+.source-list a:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+
+/* "Source: ..." under each guided step: small and quiet, but readable. */
+.step-source { margin: 0; font-size: 1rem; color: var(--muted); font-style: italic; }
+
+/* ---------- Update 5 ---------- */
+/* CPR screen: AED arrived / Shock delivered / EMS arrived in one compact row
+   right under the beat. */
+.action-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.action-row .log-btn { min-height: 76px; padding: 8px 6px; gap: 2px; }
+.action-row .log-btn-label { font-size: 1.02rem; }
+.action-row .log-btn-status { font-size: 0.9rem; }
+
+/* Link-style button inside the 911 card. Dark text on the amber/green card. */
+.status-link {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+  cursor: pointer;
+}
+.status-link:focus-visible { outline: 3px solid currentColor; outline-offset: 2px; }
+/* Inside a sentence: no extra height, but still a 24px+ tap target (WCAG 2.5.8). */
+.status-link-inline { min-height: 0; padding: 2px 0; display: inline; }
+
+/* Red button on a step, e.g. "They stopped responding: start CPR". */
+.btn-emergency {
+  border-color: var(--signal);
+  color: var(--text);
+  background: var(--surface);
+  border-width: 3px;
+}
+
+/* "More ways to reach 911" screen */
+.help-section {
+  padding: 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.help-section h3 { margin: 0; }
+.help-section p { margin: 0; }
+.sms-preview {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.loc-result { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
+
+/* ---------- Emergency-friendly UI (Sun) ---------- */
+/* Situation buttons: name + the signs to look for, arrow on the right. */
+.scenario-btn { gap: 12px; }
+.choice-text { display: flex; flex-direction: column; gap: 4px; text-align: left; min-width: 0; }
+.choice-label { font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
+.choice-hint { font-size: 1rem; font-weight: 500; color: var(--muted); line-height: 1.3; }
+
+/* The 3 most urgent: bigger, red outline. */
+.scenario-btn.is-urgent { min-height: 76px; padding-block: 12px; border-color: var(--signal); border-width: 3px; }
+.scenario-btn.is-urgent .choice-label { font-size: 1.35rem; }
+
+/* "Not sure? Answer a few questions": dashed amber outline, one line, right after the urgent ones. */
+.btn-unsure-compact { border-style: dashed; border-color: var(--warn); color: var(--warn); font-size: 1.1rem; }
+
+/* Short phones: drop the "Pick what you see." line so "Not sure?" fits on the first screen. */
+@media (max-height: 700px) {
+  #screen-picker > p.muted { display: none; }
+}
+
+/* Other situations: smaller so the list is quick to scan. */
+.picker-subheading { margin: 10px 0 0; font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.scenario-btn.is-other { min-height: 68px; padding-block: 10px; }
+.scenario-btn.is-other .choice-label { font-size: 1.1rem; }
+
+/* Folded event log */
+.log-details { border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.log-details summary {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.log-details[open] summary { border-bottom: 1px solid var(--border); }
+.log-details .timeline { margin: 8px 12px 12px; }
+.log-details summary:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+
+/* Step details as a bullet list */
+.step-detail ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
+.step-detail { font-size: 1.1rem; }
+
+/* Small toggle (read aloud) next to the step counter */
+.btn-small { min-height: var(--tap-min); padding: 6px 14px; font-size: 1rem; align-self: flex-start; }
+
+/* ---------- Resume card (home screen) ---------- */
+.resume-card {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+  border: 2px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+}
+.resume-title { font-size: 1.3rem; font-weight: 800; }
+
+/* ---------- Event log panel ---------- */
+.log-panel {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.log-head h3 { margin: 0; }
+
+/* ---------- Disclaimer ---------- */
+.disclaimer {
+  margin: 0;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  background: var(--surface);
+  font-size: 1rem;
+}
+
+/* ---------- Timeline (event log) ---------- */
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-left: 3px solid var(--signal);  /* a vertical "time line" */
+}
+
+.timeline li {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-time {
+  color: var(--muted);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-action { font-weight: 700; }
+
+/* ---------- Animations ---------- */
+/* Button squeezes in quickly, then springs back: like a chest compression. */
+@keyframes compress {
+  0%   { transform: scale(1); }
+  15%  { transform: scale(0.95); }
+  45%  { transform: scale(1); }
+}
+
+@keyframes ripple {
+  from { transform: scale(1);   opacity: 0.8; }
+  to   { transform: scale(1.5); opacity: 0; }
+}
+
+/* Smaller ripple for the 911 pill so it stays inside the top bar. */
+@keyframes ripple-small {
+  from { transform: scale(1);          opacity: 0.9; }
+  to   { transform: scale(1.12, 1.3);  opacity: 0; }
+}
+
+@keyframes blink {
+  50% { opacity: 0.2; }
+}
+
+/* Some people get dizzy or distracted by motion and turn on "Reduce motion"
+   in their phone settings. We respect that: no pulsing, just a steady glow. */
+@media (prefers-reduced-motion: reduce) {
+  .btn-start, .btn-cpr-start, .ring, .btn-call::after, .rec-dot { animation: none; }
+  /* (The CPR beat circle uses a brightness flash instead; see pulseCircle in app.js.) */
+  .ring { display: none; }
+  .btn-call::after { opacity: 0.6; }
+}

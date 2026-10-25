@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<rect width="800" height="600" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#c8102e"/></marker></defs>
+<g stroke="#1d1d1f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+<line x1="40" y1="570" x2="760" y2="570" stroke="#bfb6ad" stroke-width="8"/>
+<rect x="345" y="390" width="50" height="175" rx="22" fill="#4b5563"/>
+<rect x="405" y="390" width="50" height="175" rx="22" fill="#4b5563"/>
+<line x1="330" y1="215" x2="120" y2="215" stroke="#1d1d1f" stroke-width="50"/><line x1="330" y1="215" x2="120" y2="215" stroke="#f3d6bf" stroke-width="40"/>
+<line x1="470" y1="215" x2="680" y2="215" stroke="#1d1d1f" stroke-width="4" stroke-dasharray="14 12" fill="none"/>
+<line x1="470" y1="220" x2="655" y2="320" stroke="#1d1d1f" stroke-width="50"/><line x1="470" y1="220" x2="655" y2="320" stroke="#f3d6bf" stroke-width="40"/>
+<rect x="320" y="185" width="160" height="220" rx="50" fill="#7d9fc9"/>
+<circle cx="400" cy="120" r="55" fill="#f3d6bf"/>
+<path d="M705,235 Q735,275 700,320" fill="none" stroke="#c8102e" stroke-width="10" marker-end="url(#arrow)"/>
+<text x="400" y="50" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#1d1d1f" stroke="none">Both arms up: one drifts down</text>
+
+</g></svg>

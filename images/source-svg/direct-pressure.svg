@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<rect width="800" height="600" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#c8102e"/></marker></defs>
+<g stroke="#1d1d1f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+<rect x="60" y="380" width="680" height="150" rx="70" fill="#4b5563"/>
+<line x1="110" y1="455" x2="690" y2="455" stroke="#6b7280" stroke-width="4"/>
+<rect x="300" y="345" width="210" height="120" rx="16" fill="#ffffff"/>
+<line x1="320" y1="380" x2="490" y2="380" stroke="#c7c7c7" stroke-width="4"/>
+<line x1="320" y1="420" x2="490" y2="420" stroke="#c7c7c7" stroke-width="4"/>
+<line x1="405" y1="40" x2="405" y2="300" stroke="#1d1d1f" stroke-width="66"/><line x1="405" y1="40" x2="405" y2="300" stroke="#f3d6bf" stroke-width="56"/>
+<line x1="470" y1="60" x2="430" y2="300" stroke="#1d1d1f" stroke-width="58"/><line x1="470" y1="60" x2="430" y2="300" stroke="#e8bf9f" stroke-width="48"/>
+<ellipse cx="405" cy="355" rx="78" ry="34" fill="#f3d6bf"/>
+<ellipse cx="420" cy="330" rx="70" ry="30" fill="#e8bf9f"/>
+<line x1="220" y1="170" x2="220" y2="330" stroke="#c8102e" stroke-width="10" marker-end="url(#arrow)"/>
+<line x1="590" y1="170" x2="590" y2="330" stroke="#c8102e" stroke-width="10" marker-end="url(#arrow)"/>
+<text x="405" y="590" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="32" text-anchor="middle" fill="#c8102e" stroke="none">Press hard. Keep pressing.</text>
+
+</g></svg>

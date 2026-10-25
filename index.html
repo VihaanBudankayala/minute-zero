@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Makes the page fit the phone's width instead of a zoomed-out desktop view. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#161616">
+  <title>Minute Zero</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="images/icon-192.png">
+</head>
+<body>
+
+  <!-- TOP BAR: always visible on every screen (it is "sticky" in styles.css). -->
+  <header class="topbar">
+    <!-- The page's main heading, always present for screen readers (hidden on screen
+         because the top bar has no room). The home screen shows the name visually. -->
+    <h1 class="visually-hidden" data-content="appName">Minute Zero</h1>
+    <div class="clock-box">
+      <div class="clock-label">
+        <!-- Red "recording" dot: only shown once the emergency has started. -->
+        <span class="rec-dot" aria-hidden="true"></span>Elapsed
+      </div>
+      <!-- role="timer" tells screen readers this is a clock. -->
+      <div id="clock" class="clock" role="timer" aria-label="Elapsed time">--:--</div>
+    </div>
+
+    <!-- A plain link with href="tel:911" opens the phone's dialer.
+         app.js also listens for taps on it so it can log "911 called".
+         It pulses until 911 has been called. -->
+    <a id="call911" class="btn-call js-call911" href="tel:911">
+      <!-- Phone icon drawn with SVG (a tiny vector drawing). aria-hidden hides
+           it from screen readers because the text already says "Call 911". -->
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+      </svg>
+      <span data-content="call911Button">Call 911</span>
+    </a>
+  </header>
+
+  <main>
+    <!-- 911 STATUS CARD: shared by every screen after START.
+         app.js switches it from "pending" (amber, !) to "done" (green, ✓).
+         The icon and the words change too, so it never relies on color alone. -->
+    <div id="status-911" class="status status-pending" role="status" hidden>
+      <span id="status-911-icon" class="status-icon" aria-hidden="true">!</span>
+      <div class="status-body">
+        <span id="status-911-text" data-content="status911.notCalled"></span>
+        <p id="status-911-tip" class="status-tip" data-content="status911.speakerTip" hidden></p>
+        <!-- Backup in case the tap didn't open the dialer. -->
+        <!-- After 911 is tapped: one line with the backup options. -->
+        <p id="status-911-fallback" class="status-tip" hidden>
+          <span data-content="status911.didntOpen"></span>
+          <button class="status-link status-link-inline js-open-911help" type="button" data-content="help911.shortLink"></button>
+        </p>
+        <!-- Before 911 is tapped. -->
+        <button id="status-911-textlink" class="status-link js-open-911help" type="button" data-content="help911.openLink"></button>
+      </div>
+    </div>
+
+    <!-- Appears once "EMS arrived" is logged: one tap to the handoff. -->
+    <div id="ems-banner" class="ems-banner" role="status" hidden>
+      <p data-content="handoff.emsBanner"></p>
+      <button class="btn btn-primary js-open-handoff" type="button" data-content="handoff.openButton"></button>
+    </div>
+
+    <!-- SCREEN: Home. Each <section class="screen"> is one "page".
+         app.js shows one at a time by toggling the `hidden` attribute. -->
+    <section id="screen-home" class="screen screen-home">
+      <div class="brand">
+        <!-- Heartbeat (ECG) line used as the logo. -->
+        <svg class="ecg" viewBox="0 0 120 24" aria-hidden="true">
+          <polyline points="0,12 34,12 40,12 44,5 49,19 55,1 61,17 65,12 120,12"/>
+        </svg>
+        <p class="app-name" data-content="appName" aria-hidden="true">Minute Zero</p>
+      </div>
+      <p class="tagline" data-content="tagline"></p>
+
+      <!-- Shown only if an unfinished emergency was auto-saved on this phone. -->
+      <div id="resume-card" class="resume-card stack" hidden>
+        <p class="resume-title" data-content="resume.title"></p>
+        <p id="resume-info" class="muted"></p>
+        <button id="btn-resume" class="btn btn-primary" type="button" data-content="resume.resume"></button>
+        <button id="btn-discard" class="btn btn-ghost" type="button" data-content="resume.discard"></button>
+        <p class="muted small" data-content="resume.note"></p>
+      </div>
+
+      <!-- The START button sits on top of two "rings" that grow and fade,
+           one ring per beat, so the button looks like it's beating. -->
+      <div class="start-wrap">
+        <span class="ring" aria-hidden="true"></span>
+        <span class="ring ring-2" aria-hidden="true"></span>
+        <button id="btn-start" class="btn-start" type="button" aria-label="Start emergency">
+          <span class="start-main" data-content="startButtonMain">START</span>
+          <span class="start-sub" data-content="startButtonSub">EMERGENCY</span>
+        </button>
+      </div>
+
+      <p class="start-hint" data-content="startHint"></p>
+      <!-- For when the person in trouble is the one holding the phone. -->
+      <button id="btn-self" class="btn btn-self" type="button" data-content="selfButton"></button>
+      <p class="beat-note" data-content="beatNote.text"></p>
+
+      <!-- The fallback text is written here too, so the disclaimer still
+           shows even if JavaScript fails to load. -->
+      <p class="disclaimer" role="note" data-content="disclaimer">
+        This app does not replace calling 911 or formal first-aid training.
+      </p>
+      <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
+    </section>
+
+    <!-- SCREEN: About & Sources (Milestone 6). The lists are built by app.js
+         from CONTENT.about, so every source lives in content.js. -->
+    <section id="screen-about" class="screen stack about" hidden>
+      <h2 data-content="about.heading"></h2>
+      <p class="disclaimer" role="note" data-content="disclaimer"></p>
+
+      <h3 data-content="about.alongsideTitle"></h3>
+      <p data-content="about.alongsideText"></p>
+
+      <h3 data-content="about.sourcesTitle"></h3>
+      <p class="muted" data-content="about.sourcesIntro"></p>
+      <ul id="about-sources" class="source-list"></ul>
+
+      <h3 data-content="about.pagesTitle"></h3>
+      <ul id="about-pages" class="source-list"></ul>
+
+      <h3 data-content="about.researchTitle"></h3>
+      <ul id="about-research" class="source-list"></ul>
+
+      <p class="muted" data-content="about.notAffiliated"></p>
+      <p data-content="about.illustrations"></p>
+      <p class="muted" data-content="about.madeFor"></p>
+
+      <h3 data-content="about.privacyTitle"></h3>
+      <p data-content="about.privacyText"></p>
+      <button id="btn-delete-all" class="btn" type="button" data-content="about.deleteAll"></button>
+      <p id="delete-status" class="copy-status" role="status" hidden></p>
+
+      <button id="btn-about-back" class="btn btn-primary" type="button" data-content="about.back"></button>
+    </section>
+
+    <!-- SCREEN: Scenario picker. app.js creates one button per scenario
+         from CONTENT.scenarios, so adding a scenario needs no HTML changes. -->
+    <section id="screen-picker" class="screen stack" hidden>
+      <h2 data-content="pickerHeading"></h2>
+      <p class="muted" data-content="pickerHint"></p>
+      <div id="scenario-list" class="stack"></div>
+    </section>
+
+    <!-- SCREEN: Is the dispatcher giving instructions? -->
+    <section id="screen-mode" class="screen stack" hidden>
+      <p class="eyebrow js-scenario-label"></p>
+      <h2 data-content="modeHeading"></h2>
+      <button id="btn-mode-dispatcher" class="btn btn-primary btn-tall" type="button" data-content="modeDispatcher"></button>
+      <button id="btn-mode-guided" class="btn btn-tall" type="button" data-content="modeGuided"></button>
+      <button class="btn btn-ghost js-change-scenario" type="button" data-content="changeScenario"></button>
+    </section>
+
+    <!-- SCREEN: Dispatcher mode. Quiet: only big one-tap log buttons,
+         no instructions competing with the dispatcher's voice. -->
+    <section id="screen-dispatcher" class="screen stack" hidden>
+      <p class="eyebrow js-scenario-label"></p>
+      <h2 data-content="dispatcherHeading"></h2>
+      <p class="muted" data-content="dispatcherHint"></p>
+
+      <!-- The time box ("Person collapsed at" / "Symptoms started at").
+           There is only ONE in the HTML: app.js moves it into whichever
+           "slot" the current screen has, and fills in the labels. -->
+      <div id="dispatcher-time-slot" class="slot">
+        <div id="time-box" class="time-box" hidden>
+          <label id="time-label" for="time-input" class="time-label"></label>
+          <p id="time-hint" class="muted small"></p>
+          <div class="time-row">
+            <input id="time-input" type="time">
+            <button id="btn-time-now" class="btn btn-fit" type="button" data-content="timeBox.now"></button>
+          </div>
+          <button id="btn-time-save" class="btn btn-primary" type="button" data-content="timeBox.save"></button>
+          <p id="time-saved" class="time-saved" hidden></p>
+        </div>
+      </div>
+
+      <!-- app.js fills this grid with the current scenario's log buttons. -->
+      <div class="action-grid js-log-actions"></div>
+
+      <div id="dispatcher-helpers-slot" class="slot"></div>
+      <!-- Text comes from the scenario (e.g. "Do the B.E. F.A.S.T. check"). -->
+      <button id="btn-to-guided" class="btn" type="button"></button>
+      <button class="btn btn-ghost js-change-scenario" type="button" data-content="changeScenario"></button>
+    </section>
+
+    <!-- SCREEN: Guided steps. app.js fills in one step at a time. -->
+    <section id="screen-guided" class="screen stack" hidden>
+      <div class="step-head">
+        <p class="eyebrow js-scenario-label"></p>
+        <!-- "Step 2 of 8". aria-live makes screen readers announce each new step. -->
+        <p id="step-counter" class="step-counter" aria-live="polite"></p>
+        <!-- Optional: the phone reads each step out loud (hands and eyes stay on the person). -->
+        <button id="btn-read-aloud" class="btn btn-fit btn-small" type="button" aria-pressed="false" hidden></button>
+      </div>
+
+      <!-- Illustration above the step text. width/height tell the browser the
+           shape before the image loads, so the page doesn't jump around. -->
+      <figure id="step-figure" class="step-figure" hidden>
+        <img id="step-image" alt="" width="800" height="600">
+      </figure>
+
+      <h2 id="step-text" class="step-text"></h2>
+      <!-- A sentence, or a bullet list if the detail has several items. -->
+      <div id="step-detail" class="muted step-detail" hidden></div>
+
+      <!-- Shown after the last step. -->
+      <div id="steps-finished" class="stack" hidden>
+        <p class="finished-note" data-content="lastStepNote"></p>
+        <button id="btn-steps-restart" class="btn" type="button" data-content="restartSteps"></button>
+      </div>
+
+      <!-- The time box is moved here when a step needs it. -->
+      <div id="guided-time-slot" class="slot"></div>
+
+      <button id="btn-step-done" class="btn btn-primary btn-tall" type="button" data-content="done"></button>
+
+      <!-- For yes/no check steps (B.E. F.A.S.T.): shown instead of Done. -->
+      <div id="step-answers" class="answer-row" hidden>
+        <button class="btn btn-tall js-step-answer" type="button" data-answer="yes" data-content="survey.yes"></button>
+        <button class="btn btn-tall js-step-answer" type="button" data-answer="no" data-content="survey.no"></button>
+        <button class="btn btn-tall js-step-answer" type="button" data-answer="notSure" data-content="survey.notSure"></button>
+      </div>
+      <button id="btn-step-emergency" class="btn btn-emergency" type="button" hidden></button>
+      <div class="row">
+        <button id="btn-step-back" class="btn" type="button" data-content="back"></button>
+        <button id="btn-step-skip" class="btn" type="button" data-content="skip"></button>
+      </div>
+
+      <!-- Which official source this step comes from (for transparency). -->
+      <p id="step-source" class="step-source"></p>
+      <div id="guided-helpers-slot" class="slot"></div>
+
+      <!-- Its text and where it goes depend on the scenario (log buttons or CPR beat). -->
+      <button id="btn-guided-switch" class="btn" type="button"></button>
+      <button class="btn btn-ghost js-change-scenario" type="button" data-content="changeScenario"></button>
+    </section>
+
+    <!-- SCREEN: CPR. Two parts:
+         1) BEFORE START: optional "Who's here?" and "Collapsed at" (compact),
+            then a big START CPR button that fits on the first screen.
+         2) RUNNING: the beat, timer and log buttons. The two boxes from part 1
+            are moved down here (app.js moves them, like the time box). -->
+    <section id="screen-cpr" class="screen stack" hidden>
+      <!-- A real heading (h2) so screen readers can jump to it. -->
+      <h2 class="eyebrow js-scenario-label"></h2>
+
+      <div id="cpr-prestart" class="stack">
+        <div id="cpr-pre-helpers-slot" class="slot"></div>
+        <div id="cpr-pre-time-slot" class="slot"></div>
+        <button id="btn-cpr-start" class="btn btn-cpr-start" type="button" data-content="cpr.startButton"></button>
+      </div>
+
+      <div id="cpr-running" class="stack" hidden>
+        <p class="muted small" data-content="cpr.followDispatcher"></p>
+
+        <!-- Appears every 2 minutes. role="alert" makes screen readers announce it. -->
+        <div id="switch-alert" class="switch-alert stack" role="alert" hidden>
+          <p class="switch-title" data-content="cpr.switchTitle"></p>
+          <p data-content="cpr.switchText"></p>
+          <button id="btn-switched" class="btn btn-on-light" type="button" data-content="cpr.switched"></button>
+        </div>
+
+        <!-- The big circle pulses exactly with the metronome sound. -->
+        <div id="beat-circle" class="beat-circle" aria-hidden="true">
+          <span id="beat-main" class="beat-main"></span>
+          <span id="beat-sub" class="beat-sub"></span>
+        </div>
+        <!-- AED arrived / Shock delivered / EMS arrived: right under the beat (Update 5). -->
+        <div class="action-row js-log-actions"></div>
+        <p id="cpr-instruction" class="cpr-instruction" data-content="cpr.instruction"></p>
+
+        <!-- 30:2 mode only: shown after 30 pushes. -->
+        <button id="btn-breaths-done" class="btn btn-primary btn-tall" type="button" data-content="cpr.breathsDone" hidden></button>
+
+
+        <!-- 2-minute countdown with a bar. -->
+        <div id="cpr-timer" class="cpr-timer">
+          <div class="cpr-timer-row">
+            <span data-content="cpr.timerLabel"></span>
+            <strong id="cpr-timer-value" class="cpr-timer-value">2:00</strong>
+          </div>
+          <div class="cpr-timer-bar"><div id="cpr-timer-fill" class="cpr-timer-fill"></div></div>
+        </div>
+
+        <!-- Toggle buttons. aria-pressed tells screen readers whether each is on. -->
+        <div class="row">
+          <button id="btn-sound" class="btn" type="button" aria-pressed="true"></button>
+          <button id="btn-trained" class="btn" type="button" aria-pressed="false"></button>
+        </div>
+
+        <div id="cpr-helpers-slot" class="slot"></div>
+
+        <!-- <details> is a built-in "tap to open" box: no JavaScript needed. -->
+        <details class="hands-help">
+          <summary data-content="cpr.handsTitle"></summary>
+          <figure class="step-figure">
+            <img id="cpr-hands-image" alt="" width="800" height="600">
+          </figure>
+        </details>
+
+        <div id="cpr-time-slot" class="slot"></div>
+
+        <button id="btn-cpr-steps" class="btn" type="button" data-content="cpr.stepHelp"></button>
+      </div>
+
+      <button class="btn btn-ghost js-change-scenario" type="button" data-content="changeScenario"></button>
+    </section>
+
+    <!-- SCREEN: "I'm not sure what's happening" check. app.js fills in one
+         question at a time from CONTENT.survey. -->
+    <section id="screen-survey" class="screen stack" hidden>
+      <p class="eyebrow" data-content="survey.heading"></p>
+      <p class="muted small" data-content="survey.hint"></p>
+
+      <div id="survey-question" class="stack">
+        <h2 id="survey-text" class="step-text" aria-live="polite"></h2>
+        <p id="survey-detail" class="muted" hidden></p>
+        <div class="answer-row">
+          <button class="btn btn-tall js-survey-answer" type="button" data-answer="yes" data-content="survey.yes"></button>
+          <button class="btn btn-tall js-survey-answer" type="button" data-answer="no" data-content="survey.no"></button>
+          <button class="btn btn-tall js-survey-answer" type="button" data-answer="notSure" data-content="survey.notSure"></button>
+        </div>
+      </div>
+
+      <!-- Shown when the answers don't lead to one of the three situations. -->
+      <div id="survey-result" class="stack" hidden>
+        <h2 id="survey-result-title" class="step-text"></h2>
+        <p id="survey-result-text"></p>
+        <button id="btn-survey-cpr" class="btn btn-primary btn-tall" type="button" data-content="survey.startCpr" hidden></button>
+      </div>
+
+      <button id="btn-survey-restart" class="btn" type="button" data-content="survey.startOver"></button>
+      <button class="btn btn-ghost js-change-scenario" type="button" data-content="survey.pickMyself"></button>
+    </section>
+
+    <!-- SCREEN: "It's happening to me". Kept very simple on purpose. -->
+    <section id="screen-self" class="screen stack" hidden>
+      <h2 class="self-heading" data-content="self.heading"></h2>
+      <a class="btn-call btn-call-big js-call911" href="tel:911">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+        </svg>
+        <span data-content="call911Button">Call 911</span>
+      </a>
+      <ul id="self-tips" class="tips"></ul>
+      <button class="btn btn-tall js-open-911help" type="button" data-content="help911.textTitle"></button>
+      <div id="self-time-slot" class="slot"></div>
+      <button class="btn js-change-scenario" type="button" data-content="self.someoneHere"></button>
+    </section>
+
+    <!-- SCREEN: More ways to reach 911 (Update 5): call, Text-to-911, location. -->
+    <section id="screen-911help" class="screen stack" hidden>
+      <h2 data-content="help911.heading"></h2>
+
+      <div class="help-section stack">
+        <h3 data-content="help911.callTitle"></h3>
+        <p data-content="help911.callText"></p>
+        <a class="btn-call btn-call-big js-call911" href="tel:911">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+          </svg>
+          <span data-content="call911Button">Call 911</span>
+        </a>
+      </div>
+
+      <div class="help-section stack">
+        <h3 data-content="help911.locTitle"></h3>
+        <p data-content="help911.locText"></p>
+        <button id="btn-locate" class="btn" type="button" data-content="help911.locButton"></button>
+        <p id="loc-result" class="loc-result" role="status" hidden></p>
+        <button id="btn-copy-loc" class="btn" type="button" data-content="help911.copy" hidden></button>
+      </div>
+
+      <div class="help-section stack">
+        <h3 data-content="help911.textTitle"></h3>
+        <p data-content="help911.textText"></p>
+        <p class="muted small" data-content="help911.textPreview"></p>
+        <p id="sms-preview" class="sms-preview"></p>
+        <!-- sms: link; app.js fills in the message (situation, time, location). -->
+        <a id="btn-text911" class="btn btn-primary btn-tall" href="sms:911" data-content="help911.textButton"></a>
+      </div>
+
+      <button id="btn-911help-back" class="btn btn-ghost" type="button" data-content="help911.back"></button>
+    </section>
+
+    <!-- SCREEN: Paramedic handoff (Milestone 5). app.js fills it from
+         buildHandoff(), the same function that makes the copied text. -->
+    <section id="screen-handoff" class="screen stack handoff" hidden>
+      <h2 class="handoff-title" data-content="handoff.heading"></h2>
+
+      <div class="handoff-grid">
+        <div class="stack">
+          <div class="handoff-situation">
+            <p class="eyebrow" data-content="handoff.situation"></p>
+            <p id="handoff-situation" class="handoff-big"></p>
+          </div>
+
+          <h3 data-content="handoff.keyTimes"></h3>
+          <!-- Rows: label, clock time, and "25 min ago" (updated live). -->
+          <div id="handoff-times" class="handoff-times"></div>
+          <p class="handoff-total"><span data-content="handoff.totalTime"></span>: <strong id="handoff-total"></strong></p>
+
+          <div id="handoff-findings-box" class="stack" hidden>
+            <h3 data-content="handoff.findings"></h3>
+            <ul id="handoff-findings" class="handoff-list"></ul>
+          </div>
+          <div id="handoff-checks-box" class="stack" hidden>
+            <h3 data-content="handoff.checks"></h3>
+            <ul id="handoff-checks" class="handoff-list"></ul>
+          </div>
+          <div id="handoff-details-box" class="stack" hidden>
+            <h3 data-content="handoff.details"></h3>
+            <ul id="handoff-details" class="handoff-list"></ul>
+          </div>
+        </div>
+
+        <div class="stack">
+          <h3 data-content="handoff.timeline"></h3>
+          <ol id="handoff-timeline" class="timeline"></ol>
+          <p class="muted small" data-content="handoff.footer"></p>
+        </div>
+      </div>
+
+      <div class="handoff-actions stack">
+        <button id="btn-fullscreen" class="btn btn-primary btn-tall" type="button"></button>
+        <div class="row">
+          <button id="btn-copy" class="btn" type="button" data-content="handoff.copy"></button>
+          <button id="btn-share" class="btn" type="button" data-content="handoff.share" hidden></button>
+        </div>
+        <p id="copy-status" class="copy-status" role="status" hidden></p>
+        <!-- Fallback if the phone won't copy automatically: select and copy by hand. -->
+        <label for="copy-fallback" class="visually-hidden" data-content="handoff.copy"></label>
+        <textarea id="copy-fallback" class="copy-fallback" rows="8" readonly hidden></textarea>
+        <button id="btn-handoff-back" class="btn btn-ghost" type="button" data-content="handoff.back"></button>
+      </div>
+    </section>
+
+    <!-- "Who's here to help?" There is only ONE of these; app.js moves it into
+         the current screen's helpers slot (like the time box). -->
+    <div id="helpers-box" class="helpers-box stack" hidden>
+      <p id="helpers-question" class="helpers-question" data-content="helpers.question"></p>
+      <div id="helpers-options" class="answer-row"></div>
+      <ul id="helpers-tips" class="tips"></ul>
+    </div>
+
+    <!-- EVENT LOG PANEL: shared by every screen after START.
+         The buttons stay visible; the long list folds away (<details>) so
+         there's less to scroll past during an emergency. -->
+    <section id="log-panel" class="log-panel stack" hidden aria-labelledby="log-heading">
+      <h3 id="log-heading" class="visually-hidden" data-content="timelineHeading"></h3>
+      <button class="btn btn-handoff js-open-handoff" type="button" data-content="handoff.openButton"></button>
+
+      <div class="row">
+        <button id="btn-add-note" class="btn" type="button" data-content="addNote"></button>
+        <button id="btn-undo" class="btn" type="button" data-content="undo"></button>
+      </div>
+
+      <!-- Note form: hidden until "Add note" is tapped. -->
+      <form id="note-form" class="stack" hidden>
+        <label for="note-text" class="visually-hidden" data-content="noteLabel"></label>
+        <textarea id="note-text" rows="3"></textarea>
+        <div class="row">
+          <button class="btn btn-primary" type="submit" data-content="saveNote"></button>
+          <button id="btn-note-cancel" class="btn" type="button" data-content="cancel"></button>
+        </div>
+      </form>
+
+      <details id="log-details" class="log-details">
+        <!-- "Show event log (12)": app.js keeps the count up to date. -->
+        <summary id="log-summary"></summary>
+        <ol id="timeline" class="timeline" aria-live="polite"></ol>
+      </details>
+    </section>
+  </main>
+
+  <!-- Order matters: content.js defines CONTENT, then app.js uses it.
+       Scripts go at the end of <body> so the HTML above already exists. -->
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

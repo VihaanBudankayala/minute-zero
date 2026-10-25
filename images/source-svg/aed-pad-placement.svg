@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<rect width="800" height="600" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#c8102e"/></marker></defs>
+<g stroke="#1d1d1f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+<circle cx="400" cy="40" r="60" fill="#f3d6bf"/>
+<rect x="370" y="80" width="60" height="70" fill="#f3d6bf" stroke="none"/>
+<rect x="230" y="140" width="340" height="440" rx="90" fill="#f3d6bf"/>
+<!-- shirt pulled open to both sides -->
+<path d="M230,230 Q190,150 300,140 L250,580 L200,580 Z" fill="#7d9fc9"/>
+<path d="M570,230 Q610,150 500,140 L550,580 L600,580 Z" fill="#7d9fc9"/>
+<line x1="300" y1="185" x2="385" y2="200" stroke-width="4"/>
+<line x1="415" y1="200" x2="500" y2="185" stroke-width="4"/>
+<!-- pad 1: the person's upper RIGHT chest (your left), below the collarbone -->
+<rect x="275" y="215" width="105" height="80" rx="12" fill="#ffffff" stroke="#c8102e" stroke-width="6"/>
+<polygon points="319.8,228.0 336.0,228.0 328.8,249.6 341.4,249.6 318.0,282.0 325.2,258.6 312.6,258.6" fill="#c8102e" stroke="none"/>
+<!-- pad 2: the person's LEFT side (your right), below the armpit -->
+<g transform="rotate(-18 500 400)">
+<rect x="450" y="345" width="95" height="115" rx="12" fill="#ffffff" stroke="#c8102e" stroke-width="6"/>
+<polygon points="489.8,375.0 506.0,375.0 498.8,396.6 511.4,396.6 488.0,429.0 495.2,405.6 482.6,405.6" fill="#c8102e" stroke="none"/>
+</g>
+<!-- wires to the AED -->
+<path d="M330,295 C330,470 520,520 640,505" fill="none" stroke="#1d1d1f" stroke-width="4"/>
+<path d="M505,455 C520,500 580,510 640,515" fill="none" stroke="#1d1d1f" stroke-width="4"/>
+<rect x="630" y="455" width="150" height="110" rx="16" fill="#2f855a"/>
+<polygon points="699.0,472.5 712.5,472.5 706.5,490.5 717.0,490.5 697.5,517.5 703.5,498.0 693.0,498.0" fill="#ffffff" stroke="none"/>
+<text x="705" y="552" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="26" text-anchor="middle" fill="#ffffff" stroke="none">AED</text>
+
+</g></svg>
