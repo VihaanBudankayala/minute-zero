@@ -60,6 +60,20 @@
   heart.org, stroke.org, redcross.org or stopthebleed.org directly). Steps marked `// VERIFY` need the student's check.
 - The app always tells the user to **follow the 911 dispatcher's instructions** when they're given.
 
+## Update 9 — Automatic location for 911: ✅ BUILT, option (C) chosen. ?v=15, CACHE v15. app.js section 27.
+## settings.autoLocation (default ON). START: silent only if permission is "granted" (Permissions API, no popup).
+## Call/Text 911: may ask. Settings switch + tutorial card 6 ("Allow location now") ask in calm time.
+## Found location: logged (kind "location"), shown on the log-panel button, added to Text 911, on the handoff.
+- Today: location is found only when the user taps "Find my location" on the 911 help screen.
+- Request: find it automatically. Then show it on the 911 card ("Your location: 40.71234, -74.00567, about 30 ft"),
+  put it in the Text 911 message automatically, and keep it on the handoff (already logged as kind "location").
+- The catch: the first time, the browser shows a permission popup. During an emergency that's one more tap, and on
+  iPhones the popup blocks the screen until answered (Metelmann 2021: app steps can delay first compressions).
+- Also: phones already send their location with a 911 CALL (Enhanced 911); the app's location matters most for
+  Text 911 and for reading to the dispatcher. No address lookup (would need an internet service; coordinates only).
+- Options: (A) ask at START; (B) ask when Call 911 / Text 911 is tapped; (C) a Settings switch that asks once,
+  in calm time, then finds the location silently at every START (and asks at Call/Text 911 if never set up).
+
 ## Update 8 — AI step pictures (student asked for prompts: treated as the go-ahead)
 - The student may make step pictures with Google Gemini ("Nano Banana"); prompts in PICTURE-PROMPTS.md
   (11 pictures, file names listed there). This REPLACES "the student draws every illustration" for those pictures.

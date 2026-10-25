@@ -224,6 +224,7 @@ function refreshUI() {
   renderHelpers();
   byId("ems-banner").hidden = !lastEntryFor(EMS_LOG);
   updateTextLinks();
+  refreshLocationButton();
   saveSession();
 }
 
@@ -288,6 +289,7 @@ function startEmergency() {
   beginSession();
 
   logEvent(CONTENT.log.emergencyStarted); // this also replaces any old saved session
+  autoLocate(false); // only if location was allowed before: never a popup at START
   buzz(200);
   showScreen("screen-picker");
 }
@@ -301,6 +303,7 @@ function startEmergency() {
 function handleCall911() {
   startEmergency(); // does nothing if already started
   logEvent(CONTENT.log.called911);
+  autoLocate(true); // may ask for permission: they're already contacting 911
   buzz([100, 60, 100]);
   // We do NOT call event.preventDefault(), so the browser still follows
   // href="tel:911" and opens the phone's dialer.
@@ -1748,6 +1751,7 @@ function updateTextLinks() {
 function handleText911() {
   startEmergency(); // does nothing if already started
   logEvent(CONTENT.log.textOpened);
+  autoLocate(true);
   updateTextLinks();
   // We do NOT call preventDefault(), so the browser still opens the text app.
 }
@@ -1780,20 +1784,24 @@ function findLocation() {
   result.textContent = CONTENT.help911.locating;
   result.hidden = false;
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const loc = {
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
-        accuracy: position.coords.accuracy, // in meters
-      };
-      logEvent(`${CONTENT.log.location} ${formatCoords(loc)}`, { kind: "location", ...loc });
-      renderHelp911();
-    },
+    (position) => logLocation(position),
     () => {
       result.textContent = CONTENT.help911.locDenied;
     },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
   );
+}
+
+// Saves a found location in the log (kind "location"), so the 911 help screen,
+// the Text 911 message and the handoff all show it.
+function logLocation(position) {
+  const loc = {
+    lat: position.coords.latitude,
+    lon: position.coords.longitude,
+    accuracy: position.coords.accuracy, // in meters
+  };
+  logEvent(`${CONTENT.log.location} ${formatCoords(loc)}`, { kind: "location", ...loc });
+  renderHelp911();
 }
 
 async function copyLocation() {
@@ -1897,7 +1905,7 @@ function resetEverything() {
 // Saved separately from the emergency log, so Start over keeps them.
 // ============================================================
 const SETTINGS_KEY = "minutezero.settings";
-const DEFAULT_SETTINGS = { textSize: "normal", calm: false, sound: true, readAloud: false };
+const DEFAULT_SETTINGS = { textSize: "normal", calm: false, sound: true, readAloud: false, autoLocation: true };
 let settings = { ...DEFAULT_SETTINGS }; // { ...x } makes a copy, like dict(x) in Python
 
 function loadSettings() {
@@ -1968,10 +1976,12 @@ function renderSettings() {
   byId("set-calm").checked = settings.calm;
   byId("set-sound").checked = settings.sound;
   byId("set-read").checked = settings.readAloud;
+  byId("set-location").checked = settings.autoLocation;
 }
 
 function openSettings() {
   byId("settings-saved").hidden = true;
+  showLocationPermission();
   renderSettings();
   showScreen("screen-settings");
 }
@@ -2005,8 +2015,14 @@ function renderTutorial() {
   const card = T.cards[tutorialIndex];
   const last = tutorialIndex === T.cards.length - 1;
   byId("tutorial-counter").textContent = `${tutorialIndex + 1} ${CONTENT.ofLabel} ${T.cards.length}`;
-  byId("tutorial-image").src = card.image.src;
-  byId("tutorial-image").alt = card.image.alt;
+  const image = byId("tutorial-image");
+  image.hidden = !card.image;            // the location card has no picture
+  if (card.image) {
+    image.src = card.image.src;
+    image.alt = card.image.alt;
+  }
+  byId("btn-tutorial-location").hidden = card.action !== "location";
+  byId("tutorial-loc-status").hidden = true;
   byId("tutorial-title").textContent = card.title;
   byId("tutorial-text").textContent = card.text;
   byId("btn-tutorial-next").textContent = last ? T.done : T.next;
@@ -2200,7 +2216,99 @@ function choosePerson(person, scenarioId) {
 }
 
 // ============================================================
-// 27. START-UP: connect buttons to functions
+// 27. AUTOMATIC LOCATION FOR 911 (Update 9)
+// The browser asks "Allow location?" the first time a site wants it. We never
+// want that popup in the middle of CPR, so:
+//   - Settings: turning on "Find my location automatically" asks NOW, in calm time.
+//   - START: finds the location silently, but only if it was allowed before.
+//   - Call 911 / Text 911: may ask (the person is already contacting 911).
+// ============================================================
+let autoLocating = false; // true while a request is running, so we never ask twice at once
+
+// "granted", "denied" or "prompt" (not asked yet), or "unknown" on older browsers.
+// navigator.permissions.query() checks WITHOUT showing a popup.
+async function locationPermission() {
+  try {
+    return (await navigator.permissions.query({ name: "geolocation" })).state;
+  } catch (err) {
+    return "unknown";
+  }
+}
+
+async function autoLocate(canAsk) {
+  if (!settings.autoLocation || !("geolocation" in navigator)) return;
+  if (autoLocating || savedLocation()) return; // already running, or already found
+  if (!canAsk) {
+    const permission = await locationPermission(); // "await": wait here for the answer
+    if (permission !== "granted") return;          // would show a popup: wait for Call / Text 911
+    if (autoLocating || savedLocation()) return;   // something else started while we waited
+  }
+  autoLocating = true;
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      autoLocating = false;
+      // Only log it if the emergency is still going and nothing else found it first.
+      if (state.startTime !== null && !savedLocation()) logLocation(position);
+    },
+    () => { autoLocating = false; }, // denied or no signal: the "Find my location" button still works
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+  );
+}
+
+// The log panel's "Find my location for 911" button shows the coordinates once
+// they're known, so they can be read to the dispatcher without opening anything.
+function refreshLocationButton() {
+  const loc = savedLocation();
+  const button = document.querySelector("#log-panel .js-open-911help");
+  button.textContent = loc ? `${CONTENT.help911.foundButton} ${formatCoords(loc)}` : CONTENT.help911.openLink;
+}
+
+// Settings switch. Turning it ON asks for permission right away (calm time).
+function changeAutoLocation(on) {
+  changeSettings({ autoLocation: on });
+  if (on) askLocationPermission(byId("set-location-status"));
+  else byId("set-location-status").hidden = true;
+}
+
+// The tutorial's "Allow location now" button does the same, showing the answer on the card.
+function tutorialAllowLocation() {
+  changeSettings({ autoLocation: true });
+  askLocationPermission(byId("tutorial-loc-status"));
+}
+
+// Asks for the location once (this is what shows the popup). `status` is the
+// paragraph where the answer is shown (on the Settings screen or the tutorial card).
+function askLocationPermission(status) {
+  status.hidden = false;
+  if (!("geolocation" in navigator)) {
+    status.textContent = CONTENT.settings.locUnavailable;
+    return;
+  }
+  status.textContent = CONTENT.settings.locAsking;
+  navigator.geolocation.getCurrentPosition(
+    () => { status.textContent = CONTENT.settings.locAllowed; }, // nothing is logged: no emergency
+    (error) => {
+      // Code 1 = PERMISSION_DENIED. Other errors (no signal, too slow) mean it WAS allowed.
+      status.textContent = error.code === 1 ? CONTENT.settings.locBlocked : CONTENT.settings.locAllowed;
+    },
+    { timeout: 15000, maximumAge: 600000 }
+  );
+}
+
+// When Settings opens: say whether location is allowed (checking never shows a popup).
+async function showLocationPermission() {
+  const status = byId("set-location-status");
+  status.hidden = true;
+  if (!settings.autoLocation) return;
+  const permission = await locationPermission();
+  if (permission === "granted" || permission === "denied") {
+    status.textContent = permission === "granted" ? CONTENT.settings.locAllowed : CONTENT.settings.locBlocked;
+    status.hidden = false;
+  }
+}
+
+// ============================================================
+// 28. START-UP: connect buttons to functions
 // ============================================================
 function init() {
   loadSettings();
@@ -2276,6 +2384,8 @@ function init() {
   byId("set-calm").addEventListener("change", (e) => changeSettings({ calm: e.target.checked }));
   byId("set-sound").addEventListener("change", (e) => changeSettings({ sound: e.target.checked }));
   byId("set-read").addEventListener("change", (e) => changeSettings({ readAloud: e.target.checked }));
+  byId("set-location").addEventListener("change", (e) => changeAutoLocation(e.target.checked));
+  byId("btn-tutorial-location").addEventListener("click", tutorialAllowLocation);
   document.querySelectorAll(".js-back-home").forEach((button) => {
     button.addEventListener("click", () => showScreen("screen-home"));
   });

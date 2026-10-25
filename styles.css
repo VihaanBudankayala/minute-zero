@@ -1003,6 +1003,9 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 .calm .side-menu { animation: none; }
 .btn-howto.is-new { border-style: dashed; border-color: var(--warn); color: var(--warn); }
 
+/* Settings: location permission status (Update 9) */
+.loc-status { margin: 0; font-weight: 700; }
+
 /* Tutorial */
 .tutorial-heading { margin: 0; }
 .tutorial-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: -8px; }

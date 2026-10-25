@@ -782,3 +782,18 @@ Naloxone took three tries: twice the model drew a **syringe**, which would teach
 the wording: the prompt said "thumb on the plunger", and "plunger" makes the model think of a syringe. The third
 prompt described the spray by its shape and grip instead (thumb-sized, nozzle on top, two fingers beside the
 nozzle, thumb on the bottom) and said what it is NOT. That one was right. All 11 planned pictures are now in.
+
+## Automatic location for 911 without a popup during CPR (Update 9)
+**Goal:** find the GPS location by itself, show it on screen to read to the dispatcher, and put it in Text 911.
+**The design problem:** the first time a site asks for location, the phone shows a permission popup, and on an
+iPhone that popup covers the screen until it's answered. We didn't want it to appear right after START, before CPR.
+**Solution:** ask in calm time instead. A Settings switch ("Find my location automatically", on by default) and a
+6th tutorial card ask once. At START the app checks the permission with `navigator.permissions.query()`, which
+never shows a popup; it only requests the location if the answer is "granted". If it was never set up, the app
+asks when Call 911 or Text 911 is tapped, when the person is already contacting 911.
+**Bug prevented (caught by a test):** tapping Call 911 before START runs both triggers almost together (START's
+check waits for the permission answer with `await`). Without a second check after the `await`, the location was
+requested twice. A flag (`autoLocating`) plus a re-check after waiting keeps it to one request (test: 1 request,
+1 log entry). This is a classic "race condition", like two Java threads updating the same variable.
+**Tested with Playwright** (it can fake GPS and permissions): allowed → found at START with 1 request; never asked →
+0 requests at START, asks at Text 911; switch off → never asks; blocked → Settings explains how to allow it.

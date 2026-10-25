@@ -86,10 +86,15 @@ const CONTENT = {
       { title: "4. Follow the dispatcher",
         image: { src: "images/tutorial-log.webp", alt: "The dispatcher screen for severe bleeding. An arrow points to the \"Firm pressure applied, tap to log\" button." },
         text: "Do what the 911 dispatcher says and tap the big buttons to log it. No one helping? The app guides you." },
-      { title: "5. Show the handoff to paramedics",
+      { title: "5. Handoff to paramedics",
         image: { src: "images/tutorial-handoff.webp", alt: "Under the log buttons, an arrow points to the \"Handoff for paramedics\" button." },
-        text: "When EMS arrives, tap \"Handoff for paramedics\". It shows the key times and everything you logged." },
+        text: "When EMS arrives, tap \"Handoff for paramedics\". It shows everything you logged, with times." },
+      // No picture: this card has a button instead (Update 9).
+      { title: "6. Set up your location (once)",
+        text: "Tap below so your phone asks for location permission now, not during an emergency. Then your location is found when you tap START, ready to read to 911.",
+        action: "location" },
     ],
+    locationButton: "Allow location now",
   },
 
   // ---------- My people: known conditions (Update 7) ----------
@@ -149,6 +154,14 @@ const CONTENT = {
     calm: "Calm: no pulsing or moving animations",
     sound: "CPR beat sound on when CPR starts",
     readAloud: "Read steps aloud from the start",
+    // Update 9: automatic location
+    locationTitle: "Location for 911",
+    autoLocation: "Find my location automatically",
+    autoLocationNote: "Turn this on now, before an emergency: your phone asks for permission once. Then your location is found when you tap START, shown on the screen to read to the dispatcher, and added to Text 911. It stays on this phone.",
+    locAsking: "Asking your phone for permission…",
+    locAllowed: "✓ Location allowed. It will be found when you tap START.",
+    locBlocked: "Location is blocked for this site. To allow it, change this site's location permission in your browser settings.",
+    locUnavailable: "This browser can't share your location.",
     saved: "✓ Saved",
     back: "Back",
   },
@@ -404,6 +417,7 @@ const CONTENT = {
   // Not medical content. Source for Text-to-911: FCC consumer guide.
   help911: {
     openLink: "Find my location for 911", // opens the 911 help screen (location + text + call)
+    foundButton: "📍 Your location for 911:",  // + coordinates, once found
     shortLink: "text 911",
     heading: "More ways to reach 911",
     callTitle: "Call if you can",

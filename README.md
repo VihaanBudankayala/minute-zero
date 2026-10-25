@@ -20,7 +20,7 @@
 - **CPR mode:** a 110-per-minute beat (sound + a pulsing circle synced to it), hands-only by default with an optional 30:2 mode, a 2-minute "switch rescuers / check the AED" timer, and AED / shock / EMS buttons right under the beat.
 - **Stroke check:** B.E. F.A.S.T. (Balance, Eyes, Face, Arm, Speech, Time) with Yes / No / Not sure, plus "symptoms started / last seen normal" time.
 - **Paramedic handoff:** key times with live "how long ago" (collapse, symptom onset, CPR start, tourniquet, AED shocks, doses), warning signs checked, and the full timeline. Full-screen mode for showing paramedics, copy and share.
-- **More ways to reach 911:** Text-to-911 with the message written for you (where available) and your GPS location to read to the dispatcher.
+- **More ways to reach 911:** Text-to-911 with the message written for you (where available), and your GPS location found **automatically** once you allow it in Settings (it never asks during CPR), shown on screen to read to the dispatcher and added to the text.
 - **My people:** save conditions you or your family have been diagnosed with (epilepsy, diabetes, severe allergy, heart disease, past stroke, opioid pain medicine) plus notes. Their situations move to the top ("Seizure for Dad"), and choosing one shows their info on the paramedic handoff. Saved only on the phone; it's what you entered, never a diagnosis by the app.
 - **Settings and presets:** text size, Calm (no pulsing), CPR sound and read-aloud defaults; presets Standard, Large text, Calm and Hands-free.
 - **Tutorial:** a 30-second, 5-card "how it works" from the ☰ menu, each card with a screenshot and arrows pointing at the button to tap. It never opens by itself, so it can't delay someone in a real emergency.
