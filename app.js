@@ -223,6 +223,7 @@ function refreshUI() {
   refreshTimeSaved();
   renderHelpers();
   byId("ems-banner").hidden = !lastEntryFor(EMS_LOG);
+  updateTextLinks();
   saveSession();
 }
 
@@ -303,11 +304,13 @@ function refreshStatus911() {
   // The speakerphone tip only shows until a mode is chosen, so the card
   // stays small and the step or log buttons fit on the screen.
   byId("status-911-tip").hidden = !called || state.mode !== null;
-  byId("status-911-fallback").hidden = !called;
+  // These extra lines only show while choosing what's happening (no mode yet),
+  // so the card stays one line on the CPR and step screens and everything fits.
+  byId("status-911-fallback").hidden = !called || state.mode !== null;
   // On a computer, say plainly that it can't call 911 (tel: just opens an app).
   byId("status-911-fallback-text").textContent =
     isComputer() ? CONTENT.status911.computer : CONTENT.status911.didntOpen;
-  byId("status-911-textlink").hidden = called;
+  byId("status-911-textlink").hidden = called || state.mode !== null;
   document.querySelectorAll(".js-call911").forEach((link) => {
     link.classList.toggle("is-called", called);
   });
@@ -347,28 +350,28 @@ function makeChoiceButton(className, labelText, hintText, onClick) {
   return button;
 }
 
-// "What's happening?": the urgent situations first (big), then
-// "I'm not sure" (so people who don't know find it without scrolling),
-// then the other situations (smaller).
+// "What's happening?": a slim "Not sure?" button, then the urgent
+// situations (big), then the other situations (smaller).
 function renderPicker() {
   const list = byId("scenario-list");
   const ids = CONTENT.scenarioOrder;
   const urgent = ids.filter((id) => CONTENT.scenarios[id].urgent);
   const others = ids.filter((id) => !CONTENT.scenarios[id].urgent);
 
-  for (const id of urgent) {
-    const scenario = CONTENT.scenarios[id];
-    list.append(makeChoiceButton("btn scenario-btn is-urgent", scenario.label, scenario.hint,
-      () => chooseScenario(id)));
-  }
-
-  // Compact, one line, so it fits on the first screen right under the urgent ones.
+  // "Not sure?" first: one slim line, so on every phone it's on the first screen,
+  // and the urgent situations are still right below it.
   const unsure = document.createElement("button");
   unsure.type = "button";
   unsure.className = "btn btn-unsure-compact";
   unsure.textContent = CONTENT.pickerUnsureShort;
   unsure.addEventListener("click", startSurvey);
   list.append(unsure);
+
+  for (const id of urgent) {
+    const scenario = CONTENT.scenarios[id];
+    list.append(makeChoiceButton("btn scenario-btn is-urgent", scenario.label, scenario.hint,
+      () => chooseScenario(id)));
+  }
 
   const heading = document.createElement("h3");
   heading.className = "picker-subheading";
@@ -1674,12 +1677,28 @@ function textTo911Message() {
   return parts.join(" ");
 }
 
+// Keeps every "Text 911" link (top bar + 911 help screen) up to date.
+// "sms:911?&body=..." opens the text app with the message filled in on both
+// iPhone and Android. encodeURIComponent makes spaces and symbols safe in a link.
+function updateTextLinks() {
+  const href = `sms:911?&body=${encodeURIComponent(textTo911Message())}`;
+  document.querySelectorAll(".js-text911").forEach((link) => { link.href = href; });
+}
+
+// Runs when a Text 911 link is tapped. Like Call 911: starts the emergency if
+// needed and logs only what we know (the text app was opened, not "texted 911").
+// The link's href is updated first, so the message includes the latest info.
+function handleText911() {
+  startEmergency(); // does nothing if already started
+  logEvent(CONTENT.log.textOpened);
+  updateTextLinks();
+  // We do NOT call preventDefault(), so the browser still opens the text app.
+}
+
 function renderHelp911() {
   const message = textTo911Message();
   byId("sms-preview").textContent = message;
-  // "sms:911?&body=..." opens the text app with the message filled in on both
-  // iPhone and Android. encodeURIComponent makes spaces and symbols safe in a link.
-  byId("btn-text911").href = `sms:911?&body=${encodeURIComponent(message)}`;
+  updateTextLinks();
 
   const loc = savedLocation();
   const result = byId("loc-result");
@@ -1874,10 +1893,8 @@ function init() {
   byId("btn-911help-back").addEventListener("click", closeHelp911);
   byId("btn-locate").addEventListener("click", findLocation);
   byId("btn-copy-loc").addEventListener("click", copyLocation);
-  // Like the 911 button: log only what we know (the text app was opened).
-  byId("btn-text911").addEventListener("click", () => {
-    startEmergency(); // does nothing if already started
-    logEvent(CONTENT.log.textOpened);
+  document.querySelectorAll(".js-text911").forEach((link) => {
+    link.addEventListener("click", handleText911);
   });
   byId("btn-about-back").addEventListener("click", closeAbout);
   byId("btn-delete-all").addEventListener("click", deleteAll);

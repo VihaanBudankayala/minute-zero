@@ -51,6 +51,7 @@ const CONTENT = {
   },
 
   call911Button: "Call 911",
+  text911Button: "Text 911",
 
   // ---------- Reset (top bar) ----------
   reset: {
@@ -86,9 +87,9 @@ const CONTENT = {
     // started the call (e.g. inside a preview, or on a computer).
     calledAt: "Call 911 tapped at", // the app adds the time after this
     // \u2011 = a hyphen that never breaks across lines, so "9-1-1" stays together.
-    didntOpen: "Dialer didn't open? Dial 9\u20111\u20111 or",
+    didntOpen: "Dialer didn't open? Dial 9\u20111\u20111, or tap Text 911.",
     // Shown instead on computers (no phone line, so tel: links can't call 911).
-    computer: "Computers usually can't call 911. Use a phone, or",
+    computer: "Computers usually can't call 911. Use a phone.",
     speakerTip:
       "Put the call on speaker. If the dispatcher is giving instructions, follow them. Tap below to log what you do.",
   },
@@ -300,7 +301,7 @@ const CONTENT = {
   // ---------- More ways to reach 911 (Update 5) ----------
   // Not medical content. Source for Text-to-911: FCC consumer guide.
   help911: {
-    openLink: "Can't talk? Text 911", // the location option is on that screen too
+    openLink: "Find my location for 911", // opens the 911 help screen (location + text + call)
     shortLink: "text 911",
     heading: "More ways to reach 911",
     callTitle: "Call if you can",

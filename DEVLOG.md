@@ -622,3 +622,22 @@ instruction, so the AED row still fits without scrolling.
 
 ### Remember: new cache version
 `sw.js` CACHE_VERSION v1 → v2, so phones that saved the old version get the new files.
+
+---
+
+## Text 911 next to Call 911 (two-row top bar)
+
+The top bar was already full on a 360-px phone (clock, Reset, Call 911), so a fourth button
+couldn't fit in one row. It's now two rows: **[clock · Reset]** and **[Call 911 | Text 911]**,
+each 911 button half the width (easier to hit than before). Text 911 opens the text app with the
+message already written. One function, `updateTextLinks()`, keeps every Text 911 link's message
+current (situation, start time, location) after every change, and the tap logs "Text to 911
+opened" (never "texted 911").
+
+**Making room (measured again on 375×667 and 360×640 touch phones):** the taller bar pushed
+START CPR and "Not sure?" down. Fixes: the 911 card's extra lines only show while choosing what's
+happening (on the CPR and step screens it's one line); "Not sure?" moved above the urgent buttons
+as one slim line, so it's on the first screen of every phone. **A gap we found:** hiding the
+card's location link meant there was no way to reach "Find my location" mid-emergency, so it
+became a button in the event-log area, available on every screen.
+Cache version: v3.

@@ -18,29 +18,42 @@
     <!-- The page's main heading, always present for screen readers (hidden on screen
          because the top bar has no room). The home screen shows the name visually. -->
     <h1 class="visually-hidden" data-content="appName">Minute Zero</h1>
-    <div class="clock-box">
-      <div class="clock-label">
-        <!-- Red "recording" dot: only shown once the emergency has started. -->
-        <span class="rec-dot" aria-hidden="true"></span>Elapsed
+
+    <!-- Row 1: elapsed time + Reset -->
+    <div class="topbar-row">
+      <div class="clock-box">
+        <div class="clock-label">
+          <!-- Red "recording" dot: only shown once the emergency has started. -->
+          <span class="rec-dot" aria-hidden="true"></span>Elapsed
+        </div>
+        <!-- role="timer" tells screen readers this is a clock. -->
+        <div id="clock" class="clock" role="timer" aria-label="Elapsed time">--:--</div>
       </div>
-      <!-- role="timer" tells screen readers this is a clock. -->
-      <div id="clock" class="clock" role="timer" aria-label="Elapsed time">--:--</div>
+      <!-- Reset: only shown during an emergency (CSS), and it always asks first. -->
+      <button id="btn-reset" class="btn-reset" type="button" data-content="reset.button"></button>
     </div>
 
-    <!-- A plain link with href="tel:911" opens the phone's dialer.
-         app.js also listens for taps on it so it can log "911 called".
-         It pulses until 911 has been called. -->
-    <!-- Reset: only shown during an emergency (CSS), and it always asks first. -->
-    <button id="btn-reset" class="btn-reset" type="button" data-content="reset.button"></button>
-
-    <a id="call911" class="btn-call js-call911" href="tel:911">
-      <!-- Phone icon drawn with SVG (a tiny vector drawing). aria-hidden hides
-           it from screen readers because the text already says "Call 911". -->
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
-      </svg>
-      <span data-content="call911Button">Call 911</span>
-    </a>
+    <!-- Row 2: the two ways to reach 911, side by side. -->
+    <div class="topbar-row topbar-911">
+      <!-- tel:911 opens the phone's dialer. app.js logs "Call 911 tapped".
+           It pulses until 911 has been called. -->
+      <a id="call911" class="btn-call js-call911" href="tel:911">
+        <!-- Phone icon drawn with SVG. aria-hidden: the text already says "Call 911". -->
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+        </svg>
+        <span data-content="call911Button">Call 911</span>
+      </a>
+      <!-- sms:911 opens the text app with a message already written (app.js fills it in).
+           Text-to-911 only works in some areas; the app explains that on the 911 help screen. -->
+      <a id="text911-top" class="btn-text911 js-text911" href="sms:911">
+        <!-- Speech-bubble icon -->
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
+        </svg>
+        <span data-content="text911Button">Text 911</span>
+      </a>
+    </div>
   </header>
 
   <main>
@@ -67,7 +80,6 @@
         <!-- After 911 is tapped: one line with the backup options. -->
         <p id="status-911-fallback" class="status-tip" hidden>
           <span id="status-911-fallback-text" data-content="status911.didntOpen"></span>
-          <button class="status-link status-link-inline js-open-911help" type="button" data-content="help911.shortLink"></button>
         </p>
         <!-- Before 911 is tapped. -->
         <button id="status-911-textlink" class="status-link js-open-911help" type="button" data-content="help911.openLink"></button>
@@ -400,7 +412,7 @@
         <p class="muted small" data-content="help911.textPreview"></p>
         <p id="sms-preview" class="sms-preview"></p>
         <!-- sms: link; app.js fills in the message (situation, time, location). -->
-        <a id="btn-text911" class="btn btn-primary btn-tall" href="sms:911" data-content="help911.textButton"></a>
+        <a id="btn-text911" class="btn btn-primary btn-tall js-text911" href="sms:911" data-content="help911.textButton"></a>
       </div>
 
       <button id="btn-911help-back" class="btn btn-ghost" type="button" data-content="help911.back"></button>
@@ -472,6 +484,8 @@
     <section id="log-panel" class="log-panel stack" hidden aria-labelledby="log-heading">
       <h3 id="log-heading" class="visually-hidden" data-content="timelineHeading"></h3>
       <button class="btn btn-handoff js-open-handoff" type="button" data-content="handoff.openButton"></button>
+      <!-- Location (and the other ways to reach 911) from any screen. -->
+      <button class="btn js-open-911help" type="button" data-content="help911.openLink"></button>
 
       <div class="row">
         <button id="btn-add-note" class="btn" type="button" data-content="addNote"></button>
