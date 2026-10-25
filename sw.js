@@ -13,7 +13,7 @@
  * When you change any file, change CACHE_VERSION (v1 -> v2) so phones throw
  * away the old saved copy and save the new files.
  */
-const CACHE_VERSION = "minutezero-v1";
+const CACHE_VERSION = "minutezero-v2";
 
 // Every file the app needs to work offline.
 const FILES = [

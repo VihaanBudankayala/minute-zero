@@ -592,3 +592,33 @@ ignores failures, so the app works the same everywhere, just without offline mod
 ### Web app manifest
 `manifest.webmanifest` gives the app a name, an icon (drawn with Python: red circle, white
 heartbeat line) and colors, so "Add to Home Screen" makes it look like a real app.
+
+---
+
+## Reset button, step help at the top, and "Call 911" on a laptop
+
+### "Call 911 on my laptop just opens an app and does nothing"
+A computer has no phone line, so a `tel:` link can only open a calling app (FaceTime, Phone
+Link, Skype). No website can make a computer call 911. The app now detects a computer with
+`window.matchMedia("(hover: hover) and (pointer: fine)")` (a mouse/trackpad, not a touch screen,
+asked the same way a CSS media query would) and, after the tap, says **"Computers usually can't
+call 911. Use a phone, or text 911"** instead of the phone message.
+**Testing lesson:** our phone-size tests were running as a "desktop" browser shrunk to phone
+width, so they saw the computer message and reported the screen as too full. Real phones have
+touch screens; the tests now emulate touch phones (`hasTouch`, `isMobile`).
+
+### Reset (top bar)
+Only shown during an emergency. It never resets on one tap: a panel on the page asks "Erase this
+emergency's log and start over?" with the safe choice (Cancel) focused, and reminds the user to
+show or copy the handoff first. "Yes" deletes the saved log and reloads the page, the simplest
+way to guarantee everything (clock, CPR beat, screens) starts fresh.
+**Problem:** adding Reset to the top bar squeezed "Call 911" onto two lines on a 360-px phone,
+which made the bar taller and pushed START CPR off the screen. Fix: `white-space: nowrap` and
+`flex: none` on the Call 911 button.
+
+### Step-by-step help moved to the top of the CPR screen
+It's now a compact button above the beat; the "follow the dispatcher" line moved under the
+instruction, so the AED row still fits without scrolling.
+
+### Remember: new cache version
+`sw.js` CACHE_VERSION v1 → v2, so phones that saved the old version get the new files.

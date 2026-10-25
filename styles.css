@@ -264,7 +264,9 @@ h2.eyebrow { font-size: 1rem; line-height: 1.3; }  /* heading for screen readers
   justify-content: center;
   gap: 8px;
   min-height: var(--tap-min);
-  padding: 12px 20px;
+  padding: 12px 18px;
+  white-space: nowrap;         /* "Call 911" never wraps onto two lines */
+  flex: none;                  /* and never gets squeezed by the Reset button */
   border-radius: 999px;        /* pill shape */
   background: var(--signal);
   color: var(--on-signal);
@@ -839,6 +841,39 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 
 /* Small toggle (read aloud) next to the step counter */
 .btn-small { min-height: var(--tap-min); padding: 6px 14px; font-size: 1rem; align-self: flex-start; }
+
+/* ---------- Reset (top bar) ---------- */
+/* Only during an emergency (body.is-active). Quiet look so it isn't tapped by mistake. */
+.btn-reset {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-min);
+  padding: 0 12px;
+  margin-left: auto;              /* sits between the clock and Call 911 */
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.is-active .btn-reset { display: flex; }
+.btn-reset:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+
+.reset-confirm {
+  padding: 14px;
+  border: 2px solid var(--signal);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.reset-confirm p { margin: 0; }
+.reset-question { font-size: 1.2rem; font-weight: 800; }
+
+/* Step-by-step help at the top of the CPR screen: compact, full width. */
+.btn-steps { width: 100%; }
 
 /* ---------- Resume card (home screen) ---------- */
 .resume-card {

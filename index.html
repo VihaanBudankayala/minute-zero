@@ -30,6 +30,9 @@
     <!-- A plain link with href="tel:911" opens the phone's dialer.
          app.js also listens for taps on it so it can log "911 called".
          It pulses until 911 has been called. -->
+    <!-- Reset: only shown during an emergency (CSS), and it always asks first. -->
+    <button id="btn-reset" class="btn-reset" type="button" data-content="reset.button"></button>
+
     <a id="call911" class="btn-call js-call911" href="tel:911">
       <!-- Phone icon drawn with SVG (a tiny vector drawing). aria-hidden hides
            it from screen readers because the text already says "Call 911". -->
@@ -41,6 +44,17 @@
   </header>
 
   <main>
+    <!-- "Erase this log and start over?" A panel on the page instead of
+         confirm(), which is tiny on phones and blocked in some places. -->
+    <div id="reset-confirm" class="reset-confirm stack" role="alertdialog" aria-labelledby="reset-question" hidden>
+      <p id="reset-question" class="reset-question" data-content="reset.question"></p>
+      <p data-content="reset.note"></p>
+      <div class="row">
+        <button id="btn-reset-yes" class="btn btn-primary" type="button" data-content="reset.yes"></button>
+        <button id="btn-reset-cancel" class="btn" type="button" data-content="reset.cancel"></button>
+      </div>
+    </div>
+
     <!-- 911 STATUS CARD: shared by every screen after START.
          app.js switches it from "pending" (amber, !) to "done" (green, ✓).
          The icon and the words change too, so it never relies on color alone. -->
@@ -52,7 +66,7 @@
         <!-- Backup in case the tap didn't open the dialer. -->
         <!-- After 911 is tapped: one line with the backup options. -->
         <p id="status-911-fallback" class="status-tip" hidden>
-          <span data-content="status911.didntOpen"></span>
+          <span id="status-911-fallback-text" data-content="status911.didntOpen"></span>
           <button class="status-link status-link-inline js-open-911help" type="button" data-content="help911.shortLink"></button>
         </p>
         <!-- Before 911 is tapped. -->
@@ -259,7 +273,8 @@
       </div>
 
       <div id="cpr-running" class="stack" hidden>
-        <p class="muted small" data-content="cpr.followDispatcher"></p>
+        <!-- Step-by-step help (AED, positioning) at the top (student's request). -->
+        <button id="btn-cpr-steps" class="btn btn-small btn-steps" type="button" data-content="cpr.stepHelp"></button>
 
         <!-- Appears every 2 minutes. role="alert" makes screen readers announce it. -->
         <div id="switch-alert" class="switch-alert stack" role="alert" hidden>
@@ -276,6 +291,7 @@
         <!-- AED arrived / Shock delivered / EMS arrived: right under the beat (Update 5). -->
         <div class="action-row js-log-actions"></div>
         <p id="cpr-instruction" class="cpr-instruction" data-content="cpr.instruction"></p>
+        <p class="muted small" data-content="cpr.followDispatcher"></p>
 
         <!-- 30:2 mode only: shown after 30 pushes. -->
         <button id="btn-breaths-done" class="btn btn-primary btn-tall" type="button" data-content="cpr.breathsDone" hidden></button>
@@ -308,7 +324,6 @@
 
         <div id="cpr-time-slot" class="slot"></div>
 
-        <button id="btn-cpr-steps" class="btn" type="button" data-content="cpr.stepHelp"></button>
       </div>
 
       <button class="btn btn-ghost js-change-scenario" type="button" data-content="changeScenario"></button>

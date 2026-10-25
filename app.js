@@ -135,6 +135,12 @@ function showScreen(screenId) {
   window.scrollTo(0, 0);
 }
 
+// True on a laptop/desktop: a mouse or trackpad that can hover, not a touch screen.
+// matchMedia asks the browser the same questions CSS media queries ask.
+function isComputer() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
 // The current scenario's data from content.js (or null before one is chosen).
 function currentScenario() {
   return state.scenarioId ? CONTENT.scenarios[state.scenarioId] : null;
@@ -298,6 +304,9 @@ function refreshStatus911() {
   // stays small and the step or log buttons fit on the screen.
   byId("status-911-tip").hidden = !called || state.mode !== null;
   byId("status-911-fallback").hidden = !called;
+  // On a computer, say plainly that it can't call 911 (tel: just opens an app).
+  byId("status-911-fallback-text").textContent =
+    isComputer() ? CONTENT.status911.computer : CONTENT.status911.didntOpen;
   byId("status-911-textlink").hidden = called;
   document.querySelectorAll(".js-call911").forEach((link) => {
     link.classList.toggle("is-called", called);
@@ -1766,7 +1775,30 @@ function registerOffline() {
 }
 
 // ============================================================
-// 23. START-UP: connect buttons to functions
+// 23. RESET (top bar)
+// Asks first, on the page. "Yes" deletes the saved log and reloads the page,
+// which is the simplest way to be sure everything (clock, CPR beat, screens)
+// starts completely fresh.
+// ============================================================
+function openResetConfirm() {
+  byId("reset-confirm").hidden = false;
+  window.scrollTo(0, 0);
+  byId("btn-reset-cancel").focus(); // the safe choice gets focus
+}
+
+function closeResetConfirm() {
+  byId("reset-confirm").hidden = true;
+}
+
+function resetEverything() {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  metronomeStop();
+  deleteSavedSession();
+  location.reload();
+}
+
+// ============================================================
+// 24. START-UP: connect buttons to functions
 // ============================================================
 function init() {
   fillContent();
@@ -1826,6 +1858,9 @@ function init() {
 
   byId("btn-cpr-start").addEventListener("click", () => startCpr());
   byId("btn-about").addEventListener("click", openAbout);
+  byId("btn-reset").addEventListener("click", openResetConfirm);
+  byId("btn-reset-cancel").addEventListener("click", closeResetConfirm);
+  byId("btn-reset-yes").addEventListener("click", resetEverything);
   // Only show "Read steps aloud" if this phone/browser can speak (feature detection).
   if ("speechSynthesis" in window) {
     byId("btn-read-aloud").hidden = false;

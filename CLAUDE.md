@@ -135,6 +135,10 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
+## Sun Oct 25 (later): Reset in the top bar (on-page confirm, then reload), step-by-step help at the top of the
+## CPR screen, computer-specific 911 message (isComputer via matchMedia). sw.js CACHE_VERSION = v2.
+## Phone-size tests must emulate touch phones (hasTouch, isMobile).
+
 ## UI pass (Sun Oct 25) — ✅ symptom hints on situation buttons, urgent-first picker with compact "Not sure?"
 ## right under them, folded event log, bullet-list details, optional "Read steps aloud" (off by default).
 

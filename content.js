@@ -52,6 +52,15 @@ const CONTENT = {
 
   call911Button: "Call 911",
 
+  // ---------- Reset (top bar) ----------
+  reset: {
+    button: "Reset",
+    question: "Erase this emergency's log and start over?",
+    note: "If paramedics need it, show or copy the handoff first.",
+    yes: "Yes, erase and start over",
+    cancel: "Cancel",
+  },
+
   // ---------- "It's happening to me" (the person in trouble is using the app) ----------
   selfButton: "It's happening to me",
   self: {
@@ -78,6 +87,8 @@ const CONTENT = {
     calledAt: "Call 911 tapped at", // the app adds the time after this
     // \u2011 = a hyphen that never breaks across lines, so "9-1-1" stays together.
     didntOpen: "Dialer didn't open? Dial 9\u20111\u20111 or",
+    // Shown instead on computers (no phone line, so tel: links can't call 911).
+    computer: "Computers usually can't call 911. Use a phone, or",
     speakerTip:
       "Put the call on speaker. If the dispatcher is giving instructions, follow them. Tap below to log what you do.",
   },
