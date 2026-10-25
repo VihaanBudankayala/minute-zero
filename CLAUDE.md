@@ -60,6 +60,14 @@
   heart.org, stroke.org, redcross.org or stopthebleed.org directly). Steps marked `// VERIFY` need the student's check.
 - The app always tells the user to **follow the 911 dispatcher's instructions** when they're given.
 
+## Update 8 — AI step pictures (student asked for prompts: treated as the go-ahead)
+- The student may make step pictures with Google Gemini ("Nano Banana"); prompts in PICTURE-PROMPTS.md
+  (11 pictures, file names listed there). This REPLACES "the student draws every illustration" for those pictures.
+- Claude checks each picture against the step text/source before adding it; wrong details get redone or edited.
+- When the first AI picture goes in: update CONTENT.about.illustrations + README Credits to say which pictures
+  were made with Google Gemini (AI). The student checks the Congressional App Challenge rules on AI-made content.
+- Lower priority than the demo video and the VERIFY items.
+
 ## Images (Update 2)
 - The student draws every illustration themselves. **Never use images from the Red Cross, AHA or the web.**
 - One illustration per key step, shown above the step text. Bleeding images must be non-graphic.
