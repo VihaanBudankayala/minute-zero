@@ -419,7 +419,16 @@ input[type="time"] { flex: 1; min-width: 0; font-size: 1.5rem; font-weight: 700;
 input:focus-visible, textarea:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
 
 /* ---------- Guided steps ---------- */
-.step-head { display: flex; flex-direction: column; gap: 2px; }
+/* Situation + "Step 2 of 5" on the left, Read aloud on the right: one compact block. */
+.step-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: center;
+}
+.step-head .eyebrow, .step-head .step-counter { grid-column: 1; }
+.step-head #btn-read-aloud { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
 .step-counter {
   margin: 0;
   font-size: 1rem;
@@ -446,6 +455,26 @@ input:focus-visible, textarea:focus-visible { outline: 3px solid var(--text); ou
 }
 
 .step-text { font-size: 1.5rem; line-height: 1.25; }
+
+/* Done (or Yes / No / Not sure) is never below the screen: "sticky" keeps it at
+   the bottom of the screen until you scroll to where it really is.
+   The box-shadow is a band of background color, so text scrolling behind it
+   doesn't peek out around the button. */
+#btn-step-done,
+#step-answers {
+  position: sticky;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 5;
+  box-shadow: 0 0 0 10px var(--bg);
+}
+#step-answers { background: var(--bg); }
+
+/* Short phones: smaller pictures, so more of the step text fits above Done. */
+@media (max-height: 760px) {
+  .step-figure { padding: 6px; }
+  .step-figure img { max-height: 24vh; }
+  .step-text { font-size: 1.35rem; }
+}
 .finished-note {
   font-size: 1.3rem;
   font-weight: 700;

@@ -16,7 +16,7 @@
  * When you change any file, change CACHE_VERSION (v1 -> v2) so phones throw
  * away the old saved copy and save the new files.
  */
-const CACHE_VERSION = "minutezero-v11";
+const CACHE_VERSION = "minutezero-v13";
 
 // Every file the app needs to work offline.
 const FILES = [
@@ -45,6 +45,7 @@ const FILES = [
   "images/back-blows.webp",
   "images/abdominal-thrusts.webp",
   "images/seizure-clear-area.webp",
+  "images/auto-injector.webp",
   "images/give-sugar.webp",
   "images/sit-and-rest.webp",
   "images/on-side.webp",

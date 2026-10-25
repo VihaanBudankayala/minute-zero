@@ -765,3 +765,16 @@ Second batch: all 6 were usable after cropping the captions. One fix: the back-b
 pointing *away* from the person's back (it showed the wind-up, not the blow), which could teach the wrong
 direction. We found the arrow's dark pixels inside a small box, grew that mask a little, and filled it in
 with OpenCV inpainting (the same method used on the tourniquet picture). 9 of the 11 planned pictures are in.
+
+## Bug (real): the Done button was below the screen on small phones
+**Problem:** on a 375×667 phone, a guided step with a picture put **Done** at 754–838 px, so the user had to
+scroll to reach the most important button. The pictures made it worse, but the bleeding steps already had it.
+**Measured first:** the top part of the step (situation, "Step 2 of 5", Read aloud on three lines) took 106 px
+and the picture 230 px. **Fix, in two parts:**
+1. Make room: the situation and step counter sit beside Read aloud (a 2-column CSS grid), and on screens shorter
+   than 760 px the picture is at most 24% of the screen height.
+2. Guarantee it: Done (and the Yes / No / Not sure row on check steps) is `position: sticky; bottom: 10px`.
+   Sticky is like `fixed`, but only while the button's real spot is below the screen; once you scroll down to
+   it, it's back in its normal place. A `box-shadow` in the background color stops text peeking out behind it.
+**Tested:** all 56 guided steps on 360×640, 375×667 and 390×844: Done is always on screen, tapping it while
+it's stuck works and logs the step, and at the bottom of the page it doesn't cover Back / Skip.

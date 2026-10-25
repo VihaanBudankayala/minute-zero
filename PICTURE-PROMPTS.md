@@ -80,8 +80,9 @@ below were rewritten to fix that.)
   4 `back-blows.webp` (an arrow pointing AWAY from the back was removed with OpenCV inpainting),
   5 `abdominal-thrusts.webp` (small "in" arrows kept), 6 `seizure-clear-area.webp`,
   7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`, 11 `give-sugar.webp`.
-- Rejected: 9 (pen pressed on the TOP of the thigh, with the blue safety cap still on the top end) and
-  10 (drawn as a SYRINGE, not a nasal spray). Prompts 9 and 10 above were rewritten.
+- 9 `auto-injector.webp`: first try rejected (top of the thigh, safety cap still on); second try used
+  (cap off, outer front of the mid-thigh; marked VERIFY in content.js).
+- 10 naloxone: rejected TWICE (drawn as a syringe both times). Not used: no picture is better than the wrong device.
 
 ## What Claude checks before a picture goes in
 - Matches the step text exactly (e.g. fist **above the belly button**, injector on the **outer thigh**,

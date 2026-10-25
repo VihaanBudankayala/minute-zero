@@ -495,7 +495,7 @@ const CONTENT = {
     // TODO (student): when your own drawings replace these, change this to
     // "Illustrations drawn by <your name>."
     // TODO (student): say where the CPR and pressure pictures came from (see CLAUDE.md, Images).
-    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for the AED and firm-surface steps, choking, low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
+    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for the AED and firm-surface steps, choking, severe allergic reaction, low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
     madeFor: "Made for the 2026 Congressional App Challenge.",
     sourcesTitle: "Official sources",
     sourcesIntro:
@@ -965,6 +965,8 @@ const CONTENT = {
         {
           // VERIFY: wording. Use the person's own prescribed device.
           text: "Ask if they have an epinephrine auto-injector (like an EpiPen). Help them use it, following the instructions on it.",
+          // VERIFY: the picture shows the pen on the outer front of the mid-thigh; compare with the pen's instructions.
+          image: { src: "images/auto-injector.webp", alt: "A man sits on the floor. A helper holds an auto-injector pen in her fist and presses it straight into the outer front of his thigh, halfway between hip and knee." },
           log: "Epinephrine auto-injector given",
           doneLabel: "Epinephrine given",
           source: "2024 AHA & American Red Cross First Aid Guidelines; American Red Cross, Allergic Reaction/Anaphylaxis",
