@@ -55,6 +55,7 @@ const CONTENT = {
 
   // ---------- Home screen links (Update 7) ----------
   home: {
+    menu: "Menu",
     howTo: "New here? See how it works (30 sec)",   // shown until the tutorial is seen once
     howToAgain: "How to use Minute Zero",
     myPeople: "My people (medical info)",

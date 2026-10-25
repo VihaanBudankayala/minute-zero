@@ -132,6 +132,8 @@ function showScreen(screenId) {
   });
   // On the handoff screen, CSS hides the 911 card, banner and event log.
   document.body.classList.toggle("on-handoff", screenId === "screen-handoff");
+  // Fold the home menu again, so home looks the same every time you come back.
+  byId("home-menu").open = false;
   window.scrollTo(0, 0);
 }
 

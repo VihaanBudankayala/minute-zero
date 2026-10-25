@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#161616">
   <title>Minute Zero</title>
-  <!-- "?v=6": bump this number (and CACHE_VERSION in sw.js) after every change,
+  <!-- "?v=7": bump this number (and CACHE_VERSION in sw.js) after every change,
        so browsers fetch the new file instead of an old saved one. -->
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <!-- "Add to Home Screen": app name, icon and colors (manifest), plus the iPhone icon. -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -145,12 +145,16 @@
         This app does not replace calling 911 or formal first-aid training.
       </p>
       <!-- Home links (Update 7). None of these is ever needed before START. -->
-      <div class="home-links stack">
-        <button id="btn-howto" class="btn btn-howto" type="button"></button>
-        <button id="btn-people" class="btn" type="button" data-content="home.myPeople"></button>
-        <button id="btn-settings" class="btn" type="button" data-content="home.settings"></button>
-        <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
-      </div>
+      <!-- Menu: <details> is the browser's built-in open/close box (no JS needed to open it). -->
+      <details id="home-menu" class="home-menu">
+        <summary><span aria-hidden="true">☰</span> <span data-content="home.menu"></span></summary>
+        <div class="home-links stack">
+          <button id="btn-howto" class="btn btn-howto" type="button"></button>
+          <button id="btn-people" class="btn" type="button" data-content="home.myPeople"></button>
+          <button id="btn-settings" class="btn" type="button" data-content="home.settings"></button>
+          <button id="btn-about" class="btn btn-ghost" type="button" data-content="about.openButton"></button>
+        </div>
+      </details>
     </section>
 
     <!-- SCREEN: Tutorial (Update 7). Opened only from the home screen or About,
@@ -600,7 +604,7 @@
 
   <!-- Order matters: content.js defines CONTENT, then app.js uses it.
        Scripts go at the end of <body> so the HTML above already exists. -->
-  <script src="content.js?v=6"></script>
-  <script src="app.js?v=6"></script>
+  <script src="content.js?v=7"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

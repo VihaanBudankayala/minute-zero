@@ -135,6 +135,9 @@
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
 8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
+## Sun Oct 25 (newest): home "☰ Menu" (<details id="home-menu">) holds How to use / My people / Settings / About;
+## showScreen() folds it again. ?v=7, CACHE_VERSION v7.
+
 ## Update 7 — ✅ BUILT (student chose ALL FOUR). ?v=6 and CACHE_VERSION v6. Keys: minutezero.settings / .people / .tutorialSeen.
 Student asked for: (1) highlight priority buttons, (2) a tutorial screen when the app opens, (3) features for
 conditions the user or their family is diagnosed with, (4) a settings page with layout choices and presets.

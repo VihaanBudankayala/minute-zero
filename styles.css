@@ -924,8 +924,21 @@ a.btn { text-decoration: none; }   /* the Text 911 link looks like a button */
 /* "Your people": amber outline, so they stand out from "Other situations". */
 .scenario-btn.is-person { border-color: var(--warn); }
 
-/* Home links */
-.home-links { width: 100%; margin-top: 16px; }
+/* Home menu (the tutorial, My people, Settings and About live inside it) */
+.home-menu { width: 100%; margin-top: 16px; border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.home-menu summary {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.home-menu summary:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+.home-menu[open] summary { border-bottom: 1px solid var(--border); }
+.home-links { width: 100%; padding: 12px; }
 .btn-howto.is-new { border-style: dashed; border-color: var(--warn); color: var(--warn); }
 
 /* Tutorial */
