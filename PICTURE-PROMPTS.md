@@ -16,7 +16,7 @@ medical mistakes were redone or not used.
 > I'm making simple first-aid pictures for a free student app. Make every picture in the style of the
 > attached image: simple flat illustration, soft colors, plain white background, 4:3 landscape.
 > Important: make ONE picture per reply, never a grid or collage. Do not add any titles, captions, labels,
-> speech bubbles or text of any kind. Picture only. No letters, numbers or logos anywhere; no brand names;
+> speech bubbles, arrows or text of any kind. Picture only. No letters, numbers or logos anywhere; no brand names;
 > no blood or injuries; adults only; realistic body positions; side or three-quarter view.
 > I'll send one scene at a time.
 
@@ -63,15 +63,23 @@ below were rewritten to fix that.)
    from the mouth. A helper kneels beside them.
 8. An adult who looks unwell sits in a chair with a hand on their chest. A helper kneels next to them
    holding a phone to their ear, staying with them.
-9. An adult sits on the floor with legs out in front. A generic auto-injector pen (no brand, no words) is
-   pressed straight into the outside of the thigh, on the side seam of the pants, halfway between hip and
-   knee. The pen is held at a right angle to the leg, in a closed fist, with no thumb over either end.
-   Side view, from the side of that leg.
+9. An adult sits on the floor with legs out in front. A helper presses a plain white generic auto-injector pen
+   (safety cap already removed, so nothing on the top end; no brand colors, no words) straight into the
+   OUTER side of the thigh: the side of the leg facing the viewer, on the side seam of the pants, halfway
+   between hip and knee. The pen is at a right angle to the side of the leg, held in a closed fist, with no
+   thumb over either end. No arrows.
 10. An adult lies on their back. A helper kneels beside them, supports the back of the person's neck so the
-    head tilts back, and puts the tip of a small generic nasal spray (no brand, no words) into one nostril,
-    thumb on the plunger.
+    head tilts back, and holds a small nasal spray device: a short plastic nozzle with two finger rests and a
+    plunger underneath, like a nasal allergy spray. NOT a syringe, no needle. The nozzle tip is in one
+    nostril, thumb on the plunger. No arrows.
 11. An adult with diabetes is awake and sitting up, holding a glass of orange juice and a small open
     container of glucose tablets. A helper sits beside them.
+
+## Status (Oct 25)
+- Used (caption band cropped off): 7 `on-side.webp` (seizure step 4 + stroke step 10), 8 `sit-and-rest.webp`,
+  11 `give-sugar.webp`.
+- Rejected: 9 (pen pressed on the TOP of the thigh, with the blue safety cap still on the top end) and
+  10 (drawn as a SYRINGE, not a nasal spray). Prompts 9 and 10 above were rewritten.
 
 ## What Claude checks before a picture goes in
 - Matches the step text exactly (e.g. fist **above the belly button**, injector on the **outer thigh**,

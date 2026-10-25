@@ -752,3 +752,12 @@ Now Next is fully visible on every card at 360×640, 375×667 and 390×844.
 `const URL = new URL(...)`. Declaring our own `URL` hides JavaScript's built-in `URL` for the
 whole file, so `new URL` failed. (Like naming a Python variable `str` and then calling `str()`.)
 Renamed it `PAGE`.
+
+## AI-made step pictures: checking before using (Update 8)
+The first Gemini attempt put all 11 scenes in one grid with garbled text, and 4 scenes were medically wrong
+(for example the fist on the chest for abdominal thrusts). With one picture per request, 3 of the next 5 were
+right and are now used: give sugar, sit and rest, lying on the side (used for both seizure and stroke). Each one
+had a caption band with text the AI wrote itself; it was cropped off, because medical text must come from our
+sources in `content.js`. Two were rejected: the naloxone picture showed a **syringe** instead of a nasal spray,
+and the auto-injector picture showed the pen on the top of the thigh with its safety cap still on.
+Lesson: AI pictures look convincing, so every one is checked against the step text before it goes in.

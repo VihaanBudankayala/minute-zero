@@ -495,7 +495,7 @@ const CONTENT = {
     // TODO (student): when your own drawings replace these, change this to
     // "Illustrations drawn by <your name>."
     // TODO (student): say where the CPR and pressure pictures came from (see CLAUDE.md, Images).
-    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed).",
+    illustrations: "Illustrations: [source to be added]. The AED and tourniquet pictures were edited for accuracy (pad position; confusing labels removed). The pictures for low blood sugar, possible heart attack, seizure and stroke (lying on their side) were made with Google Gemini (AI) and checked against the step text; the prompts are in PICTURE-PROMPTS.md.",
     madeFor: "Made for the 2026 Congressional App Challenge.",
     sourcesTitle: "Official sources",
     sourcesIntro:
@@ -844,6 +844,7 @@ const CONTENT = {
         {
           // VERIFY: the recovery-position wording (Red Cross stroke page).
           text: "If they're drowsy, drooling or having trouble swallowing, help them lie on their side.",
+          image: { src: "images/on-side.webp", alt: "A person lying on their side on the floor, head resting on their arm, face turned slightly down. A helper kneels beside them." },
           log: "Helped onto their side",
           source: "American Red Cross, Stroke",
         },
@@ -914,6 +915,7 @@ const CONTENT = {
         {
           // VERIFY: "sit and rest" wording.
           text: "Have them sit down and rest while you wait for EMS.",
+          image: { src: "images/sit-and-rest.webp", alt: "A man sits on a chair with a hand on his chest. A helper kneels next to him, a hand on his arm, talking on the phone." },
           log: "Person resting, sitting down",
           source: "AHA, Warning Signs of a Heart Attack",
         },
@@ -1017,6 +1019,7 @@ const CONTENT = {
         {
           // VERIFY: when to turn them (during vs. after the jerking).
           text: "Turn them onto their side if you can.",
+          image: { src: "images/on-side.webp", alt: "A person lying on their side on the floor, head resting on their arm, face turned slightly down. A helper kneels beside them." },
           log: "Placed on their side",
           source: "2024 AHA & American Red Cross First Aid Guidelines; American Red Cross",
         },
@@ -1100,6 +1103,7 @@ const CONTENT = {
         },
         {
           text: "Give them sugar: glucose tablets if you have them, or another sugary food or drink. At least 20 grams of sugar.",
+          image: { src: "images/give-sugar.webp", alt: "A man who is awake sits on a sofa holding a glass of orange juice and a bottle of glucose tablets. A helper sits beside him." },
           log: "Sugar given",
           doneLabel: "Sugar given",
           source: "2024 AHA & American Red Cross First Aid Guidelines",

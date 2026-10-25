@@ -67,6 +67,9 @@
 - When the first AI picture goes in: update CONTENT.about.illustrations + README Credits to say which pictures
   were made with Google Gemini (AI). The student checks the Congressional App Challenge rules on AI-made content.
 - Lower priority than the demo video and the VERIFY items.
+- IN USE (?v=10, CACHE v10): give-sugar, sit-and-rest, on-side (seizure 4 + stroke 10); captions cropped; credit added.
+  Rejected: naloxone (syringe), auto-injector (top of thigh, cap on). Guided-step Done button is below the fold on
+  small phones when a step has a picture (pre-existing, not yet fixed).
 
 ## Images (Update 2)
 - The student draws every illustration themselves. **Never use images from the Red Cross, AHA or the web.**
