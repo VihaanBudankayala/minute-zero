@@ -133,7 +133,7 @@
 6. ✅ **About & Sources:** (built; sources/pages/research are data in CONTENT.about; "Source:" shown under each guided step; privacy note + two-tap delete; student must fill in their name for the illustration credit) every source with links, the disclaimer, a "Works alongside 911" explanation, and an illustration credit for the student.
 7. ✅ **Offline:** sw.js (cache first, update in background; bump CACHE_VERSION on every change!) + manifest + icons. Tested offline on localhost.
    **Polish (if time allows):** GPS coordinates for the dispatcher, accessibility pass.
-8. README.md ✅. Publishing: repo VihaanBudankayala/minute-zero not reachable yet (student must create it and/or connect GitHub at claude.ai/connect-github). Pages URL will be https://vihaanbudankayala.github.io/minute-zero/
+8. README.md ✅. Repo: https://github.com/VihaanBudankayala/minute-zero (branch main). GitHub Pages URL: https://vihaanbudankayala.github.io/minute-zero/ . Working copy for this session: /home/user/minute-zero.
 
 ## UI pass (Sun Oct 25) — ✅ symptom hints on situation buttons, urgent-first picker with compact "Not sure?"
 ## right under them, folded event log, bullet-list details, optional "Read steps aloud" (off by default).
