@@ -59,6 +59,8 @@ Minute Zero is a student project and is not affiliated with or endorsed by these
 Everything stays on the phone. No accounts, no server, nothing is sent anywhere unless you copy or share the handoff yourself.
 
 ## Future ideas
+The full plan for version 2.0, including working with 911 centers, EMS and government, is in [`ROADMAP.md`](ROADMAP.md).
+
 - Have EMS professionals and first-aid instructors review every step (all `// VERIFY` items).
 - More languages, and a version for children and infants.
 - A native app (for example, a lock-screen CPR beat).
@@ -68,3 +70,6 @@ Everything stays on the phone. No accounts, no server, nothing is sent anywhere 
 - Illustrations: [source to be added by the author]
 - Step pictures for the AED and firm-surface steps, choking, severe allergic reaction, opioid overdose, low blood sugar, possible heart attack, seizure and stroke (lying on their side): made with Google Gemini (AI) from the prompts in `PICTURE-PROMPTS.md`, then checked against the step text and cropped to remove generated captions.
 - Built with help from Claude (Anthropic) as a pair-programming partner. See `DEVLOG.md` for the technical problems and how they were solved.
+
+## License
+The code is open source under the [MIT License](LICENSE), © 2026 Vihaan Budankayala. The medical steps are based on the guidelines of the organizations listed under Sources; Minute Zero is not affiliated with or endorsed by them.

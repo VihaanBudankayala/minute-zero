@@ -44,17 +44,19 @@ Medical accuracy. Every step had to come from official sources, and steps not ye
 
 ## What improvements would you make if you were to create a 2.0 version of your app?
 
-1. Expert review and real-world testing. I would have EMS professionals and first-aid instructors review every step, and test the app with volunteers in practice emergencies using CPR manikins. Research has shown that using an app can delay the first chest compression, so I would measure how quickly people start CPR with and without Minute Zero, and remove anything that slows them down.
+My biggest goal for Minute Zero 2.0 is to make it a tool that 911 centers and EMS agencies trust and recommend, while keeping its main rule: work alongside 911, never instead of it, and never diagnose.
 
-2. Reaching more people. I would add more languages, starting with Spanish, and steps for children and infants, whose CPR and choking care are different from adults'. I would also add a hands-free voice mode, so a rescuer could say "AED arrived" while doing compressions instead of tapping the screen.
+1. Expert review and testing. I would ask local paramedics, 911 dispatchers and certified CPR instructors to review every step, and test the app with volunteers in practice emergencies on CPR manikins. Research has shown that apps can delay the first chest compression, so I would measure that time with and without Minute Zero and remove anything that slows people down.
 
-3. A native app. A phone app could keep the CPR beat running on the lock screen, vibrate with the beat so it works in a noisy place, and open even faster from the home screen.
+2. Working with 911. I would start by showing the app to our county's 911 center and EMS agency and asking what would help them most. Many 911 centers follow telecommunicator CPR protocols, so Dispatcher mode could use the same words the dispatcher uses. Modern Next Generation 911 systems can receive extra data with a call, for example through data services such as RapidSOS that many 911 centers already use. With a partnership and the user's permission, Minute Zero could send the location and key times, like when the person collapsed, the moment 911 is called.
 
-4. Sending the handoff to EMS. Right now the summary stays on the phone until the user shows or shares it. With partnerships and strong privacy protections, the location and timeline could go straight to the 911 center or the ambulance, so paramedics know the key times before they arrive.
+3. Working with EMS. Paramedics keep electronic patient records that follow national EMS data standards (NEMSIS). If the handoff could be exported in a compatible format, or shared by scanning a QR code with no internet needed, the bystander's timeline would go straight into the paramedics' record.
 
-5. Finding help nearby. With public data, the app could show the nearest AED, which matters because every minute without a shock lowers the chance of survival.
+4. Working with government. I would run a pilot with one 911 center and one EMS agency, then share the results with our Representative's office and state lawmakers working on 911 modernization and CPR education. Before adding anything that interprets symptoms, like AI triage, I would follow the FDA's guidance on medical software, and once any data leaves the phone, I would follow health-privacy rules and always ask the user first.
 
-6. Smarter help, only when it's proven. I chose not to use AI to diagnose, because an app that tells a bystander "this is a stroke" needs clinical testing first. In a future version, any AI triage would come only after that testing, and the app would still always say to call 911.
+5. Reaching more people. Spanish and other languages, steps for children and infants, a native app with a lock-screen CPR beat, hands-free voice logging, and a map of the nearest AED.
+
+My full plan is in the ROADMAP file on GitHub.
 
 ## Did you use AI? (how, and what you contributed directly)
 
