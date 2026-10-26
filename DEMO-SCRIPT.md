@@ -1,7 +1,7 @@
 # Minute Zero — demo video script (2:58)
 
 Matches `minute-zero-demo.mp4` (version 2). Read each part while the video shows that part.
-Replace `[Name]` and `[School]`.
+Replace `[School]`.
 
 **Rules found for 2026** (check your district's page): 1–3 minutes, a **public** YouTube or Vimeo video;
 introduce yourself, the app's name, purpose and audience, the tools/languages used, and show how it works.
@@ -14,7 +14,7 @@ AI use is allowed but must be **fully disclosed**.
 ---
 
 **0:00–0:10 · You** (your 10-second clip, phone held sideways; or say this over the title card)
-"Hi, I'm [Name], a ninth grader at [School]. This is Minute Zero, an app for anyone who sees someone
+"Hi, I'm Vihaan Budankayala, a ninth grader at [School]. This is Minute Zero, an app for anyone who sees someone
 collapse and needs to help."
 
 **0:10–0:25 · The first minutes**
