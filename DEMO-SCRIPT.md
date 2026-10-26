@@ -51,7 +51,7 @@ to the right steps. The app never diagnoses; it only guides."
 **SCREEN:** Tap "EMS arrived", then "Handoff for paramedics". Show the key times, then "Show to paramedic".
 **SAY:** "When paramedics arrive, they get a clear summary: the key times, how long ago each one was, and the full
 timeline. You can show it full screen, copy it or share it."
-**SCREEN:** Point at "📍 Your location for 911".
+**SCREEN:** Point at the "📍 For 911" location button (bottom of the screen).
 **SAY:** "It can also find your location to read to the dispatcher, and write a Text 911 message for you if you
 can't talk."
 
